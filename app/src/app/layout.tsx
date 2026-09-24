@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter, Space_Grotesk } from "next/font/google";
-import { headers } from "next/headers";
-import { TradingProvider } from "@/lib/hooks/useTrading";
-import Web3Provider from "@/providers/Web3Provider";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import { ToastProvider } from "@/components/ui/Toast";
 import "./globals.css";
 
@@ -28,37 +27,34 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "xPrime | Prime Brokerage for Onchain Equities",
+  title: "Scouter | PreStocks Discovery & Research Terminal",
   description:
-    "Unlock yield, leverage, and liquidity from your stock portfolio.",
+    "Discover, research, and compare tokenised pre-IPO assets available through PreStocks on Solana.",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const headersList = await headers();
-  const cookies = headersList.get("cookie");
-
   return (
     <html
       lang="en"
       className={`dark ${plusJakarta.variable} ${inter.variable} ${spaceGrotesk.variable}`}
     >
       <head>
-        {/* eslint-disable-next-line @next/next/no-page-custom-font -- App Router layout, not Pages Router */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font -- App Router layout */}
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-surface text-on-surface font-body antialiased">
-        <Web3Provider cookies={cookies}>
-          <TradingProvider>
-            <ToastProvider>{children}</ToastProvider>
-          </TradingProvider>
-        </Web3Provider>
+      <body className="min-h-screen bg-surface text-on-surface font-body antialiased flex flex-col">
+        <ToastProvider>
+          <Navbar />
+          <main className="flex-1 pt-16">{children}</main>
+          <Footer />
+        </ToastProvider>
       </body>
     </html>
   );
