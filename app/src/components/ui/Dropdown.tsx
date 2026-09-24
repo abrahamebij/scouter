@@ -43,7 +43,7 @@ export default function Dropdown({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center justify-between gap-2 w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-3 py-2 text-sm text-on-surface font-bold hover:border-primary/40 transition-all duration-150 cursor-pointer"
+        className="flex items-center justify-between gap-2 w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg px-3 py-2 text-sm text-on-surface font-bold hover:border-outline/60 transition-all duration-150 cursor-pointer"
       >
         <span className="truncate">{selectedValue}</span>
         <MaterialIcon
@@ -54,7 +54,7 @@ export default function Dropdown({
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1 w-full bg-surface-container-low border border-outline-variant/20 rounded-lg shadow-xl shadow-black/20 overflow-hidden">
+        <div className="absolute z-50 mt-1 w-full bg-surface-container-low border border-outline-variant/30 rounded-lg shadow-xl shadow-black/30 overflow-hidden">
           {options.map((opt) => (
             <button
               key={opt}
@@ -62,7 +62,7 @@ export default function Dropdown({
               onClick={() => handleSelect(opt)}
               className={`w-full text-left px-3 py-2.5 text-sm transition-colors duration-100 cursor-pointer ${
                 opt === selectedValue
-                  ? "bg-primary/10 text-primary font-bold"
+                  ? "bg-primary/8 text-on-surface font-bold"
                   : "text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface"
               }`}
             >

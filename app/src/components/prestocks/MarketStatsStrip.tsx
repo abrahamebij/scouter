@@ -40,7 +40,7 @@ export default function MarketStatsStrip({ products }: MarketStatsStripProps) {
           <span className="font-mono text-xl font-bold text-on-surface">
             {totalAssets}
           </span>
-          <span className="text-[10px] font-label uppercase tracking-widest text-primary/80 bg-primary/10 px-2 py-0.5 rounded">
+          <span className="text-[10px] font-label uppercase tracking-widest text-accent/80 bg-accent/8 px-2 py-0.5 rounded">
             Live SPL
           </span>
         </div>
@@ -55,7 +55,7 @@ export default function MarketStatsStrip({ products }: MarketStatsStripProps) {
           Largest Implied Valuation
         </div>
         <div className="mt-2 flex items-baseline justify-between">
-          <span className="font-mono text-xl font-bold text-primary">
+          <span className="font-mono text-xl font-bold text-accent">
             {formatCompactValuation(highestValuationProduct?.impliedValuation || 0)}
           </span>
           <span className="font-mono text-xs text-on-surface-variant font-semibold">

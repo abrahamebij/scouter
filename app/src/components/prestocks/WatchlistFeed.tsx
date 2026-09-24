@@ -33,7 +33,7 @@ export default function WatchlistFeed({ allProducts }: WatchlistFeedProps) {
   if (!isLoaded) {
     return (
       <div className="py-20 text-center text-on-surface-variant flex items-center justify-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+        <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
         <span className="text-xs font-mono">Loading saved watchlist...</span>
       </div>
     );
@@ -53,7 +53,7 @@ export default function WatchlistFeed({ allProducts }: WatchlistFeedProps) {
         </p>
         <Link
           href="/discover"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-headline font-semibold text-xs hover:brightness-110 shadow-lg shadow-primary/20 transition-all"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-headline font-semibold text-xs hover:brightness-95 shadow-sm transition-all"
         >
           <MaterialIcon icon="explore" size="sm" />
           <span>Discover Companies</span>
@@ -77,7 +77,7 @@ export default function WatchlistFeed({ allProducts }: WatchlistFeedProps) {
             <h2 className="font-headline font-bold text-base text-on-surface">
               Monitored Assets ({watchlistProducts.length})
             </h2>
-            <span className="text-[11px] font-mono text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
+            <span className="text-[11px] font-mono text-accent bg-accent/8 border border-accent/15 px-2 py-0.5 rounded-full">
               Live Matched
             </span>
           </div>
@@ -92,7 +92,7 @@ export default function WatchlistFeed({ allProducts }: WatchlistFeedProps) {
         {watchlistProducts.length >= 2 && (
           <Link
             href={`/compare?symbols=${compareQuery}`}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/30 text-xs font-headline font-semibold text-primary transition-colors flex-shrink-0"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/30 text-xs font-headline font-semibold text-on-surface transition-colors flex-shrink-0"
           >
             <MaterialIcon icon="compare_arrows" size="sm" />
             <span>Compare Saved Assets</span>

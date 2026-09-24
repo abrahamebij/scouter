@@ -30,7 +30,7 @@ export default function ProductFilters({
           onClick={() => onPremiumFilterChange("all")}
           className={`px-3 py-1 rounded-lg transition-colors font-label uppercase tracking-wider text-[11px] ${
             premiumFilter === "all"
-              ? "bg-surface-container-highest text-primary font-bold shadow-sm"
+              ? "bg-surface-container-highest text-on-surface font-bold shadow-sm"
               : "text-on-surface-variant hover:text-on-surface"
           }`}
         >
@@ -40,7 +40,7 @@ export default function ProductFilters({
           onClick={() => onPremiumFilterChange("premium")}
           className={`px-3 py-1 rounded-lg transition-colors font-label uppercase tracking-wider text-[11px] ${
             premiumFilter === "premium"
-              ? "bg-surface-container-highest text-primary font-bold shadow-sm"
+              ? "bg-surface-container-highest text-on-surface font-bold shadow-sm"
               : "text-on-surface-variant hover:text-on-surface"
           }`}
         >
@@ -50,7 +50,7 @@ export default function ProductFilters({
           onClick={() => onPremiumFilterChange("discount")}
           className={`px-3 py-1 rounded-lg transition-colors font-label uppercase tracking-wider text-[11px] ${
             premiumFilter === "discount"
-              ? "bg-surface-container-highest text-secondary font-bold shadow-sm"
+              ? "bg-surface-container-highest text-on-surface font-bold shadow-sm"
               : "text-on-surface-variant hover:text-on-surface"
           }`}
         >
@@ -66,7 +66,7 @@ export default function ProductFilters({
         <select
           value={sortField}
           onChange={(e) => onSortFieldChange(e.target.value as SortField)}
-          className="bg-surface-container-high border border-outline-variant/30 text-on-surface text-xs rounded-xl px-3 py-2 font-headline focus:outline-none focus:border-primary"
+          className="bg-surface-container-high border border-outline-variant/30 text-on-surface text-xs rounded-xl px-3 py-2 font-headline focus:outline-none focus:border-outline/60"
         >
           <option value="impliedValuation">Implied Valuation</option>
           <option value="tokenPrice">Token Price</option>
@@ -78,7 +78,7 @@ export default function ProductFilters({
         {/* Direction toggle button */}
         <button
           onClick={onSortDirectionToggle}
-          className="p-2 rounded-xl bg-surface-container-high border border-outline-variant/30 text-on-surface-variant hover:text-primary transition-colors"
+          className="p-2 rounded-xl bg-surface-container-high border border-outline-variant/30 text-on-surface-variant hover:text-on-surface transition-colors"
           title={`Order: ${sortDirection === "desc" ? "Highest to lowest" : "Lowest to highest"}`}
         >
           <MaterialIcon

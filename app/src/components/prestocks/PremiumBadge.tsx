@@ -16,7 +16,7 @@ export default function PremiumBadge({
 
   let colorClasses = "bg-surface-container-high text-on-surface-variant border-outline-variant/30";
   if (isPositive) {
-    colorClasses = "bg-primary/10 text-primary border-primary/25";
+    colorClasses = "bg-accent/8 text-accent border-accent/20";
   } else if (isNegative) {
     colorClasses = "bg-secondary/10 text-secondary border-secondary/25";
   }

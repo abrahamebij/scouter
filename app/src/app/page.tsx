@@ -26,7 +26,7 @@ export default async function HomePage() {
       <section className="text-center sm:text-left pt-6 pb-2 border-b border-outline-variant/15 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="max-w-3xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/25 text-xs">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
             <span className="font-label uppercase tracking-widest text-[11px] text-on-surface-variant">
               PreStocks Solana Terminal
             </span>
@@ -34,7 +34,7 @@ export default async function HomePage() {
 
           <h1 className="text-3xl sm:text-5xl font-headline font-extrabold tracking-tight text-on-surface leading-tight">
             Discover &amp; Research <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary-fixed to-secondary">
+            <span className="text-primary">
               Tokenised Pre-IPO Assets
             </span>
           </h1>
@@ -48,7 +48,7 @@ export default async function HomePage() {
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/discover"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-headline font-semibold text-sm hover:brightness-110 shadow-lg shadow-primary/20 transition-all"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-headline font-semibold text-sm hover:brightness-95 shadow-sm transition-all"
           >
             <span>Open Discover</span>
             <MaterialIcon icon="explore" size="sm" />
@@ -82,7 +82,7 @@ export default async function HomePage() {
             <div className="text-[11px] font-label uppercase tracking-wider text-on-surface-variant/80 mb-1">
               Combined Implied Valuation
             </div>
-            <div className="font-mono text-2xl font-bold text-primary">
+            <div className="font-mono text-2xl font-bold text-accent">
               {formatCompactValuation(totalImpliedValuation)}
             </div>
             <div className="text-[11px] text-on-surface-variant/70 mt-1 font-label">

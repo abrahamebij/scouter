@@ -56,7 +56,7 @@ export default function TokenMetrics({ product }: TokenMetricsProps) {
             Implied Valuation
           </div>
           <div
-            className="text-2xl font-headline font-bold text-primary font-mono"
+            className="text-2xl font-headline font-bold text-accent font-mono"
             title={formatCurrency(product.impliedValuation)}
           >
             {formatCompactValuation(product.impliedValuation)}

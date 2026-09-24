@@ -39,8 +39,8 @@ export default function WatchlistButton({
         title={active ? "Remove from watchlist" : "Add to watchlist"}
         className={`p-1.5 rounded-lg border transition-all ${
           active
-            ? "bg-primary/15 border-primary/40 text-primary"
-            : "bg-surface-container-high/60 border-outline-variant/20 text-on-surface-variant hover:text-on-surface hover:border-outline-variant/40"
+            ? "bg-accent/10 border-accent/25 text-accent"
+            : "bg-surface-container-high/60 border-outline-variant/20 text-on-surface-variant hover:text-on-surface hover:border-outline-variant/50"
         } ${className}`}
       >
         <MaterialIcon
@@ -56,8 +56,8 @@ export default function WatchlistButton({
       onClick={handleClick}
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-headline font-semibold transition-all ${
         active
-          ? "bg-primary/15 border-primary/40 text-primary hover:bg-primary/20"
-          : "bg-surface-container-high border-outline-variant/30 text-on-surface hover:border-primary/40 hover:bg-surface-container-highest"
+          ? "bg-accent/10 border-accent/25 text-accent hover:bg-accent/15"
+          : "bg-surface-container-high border-outline-variant/30 text-on-surface hover:border-outline/50 hover:bg-surface-container-highest"
       } ${className}`}
     >
       <MaterialIcon icon={active ? "bookmark" : "bookmark_border"} size="sm" />

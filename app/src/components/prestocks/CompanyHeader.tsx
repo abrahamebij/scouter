@@ -34,13 +34,13 @@ export default function CompanyHeader({ product }: CompanyHeaderProps) {
       <div className="flex items-center justify-between text-xs">
         <Link
           href="/discover"
-          className="inline-flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors font-headline"
+          className="inline-flex items-center gap-1 text-on-surface-variant hover:text-on-surface transition-colors font-headline"
         >
           <MaterialIcon icon="arrow_back" size="sm" />
           <span>Back to Discover</span>
         </Link>
 
-        <span className="font-label text-[11px] uppercase tracking-wider text-primary/80 bg-primary/10 border border-primary/20 px-2.5 py-0.5 rounded-full">
+        <span className="font-label text-[11px] uppercase tracking-wider text-accent/80 bg-accent/8 border border-accent/15 px-2.5 py-0.5 rounded-full">
           PreStocks Asset
         </span>
       </div>
@@ -61,7 +61,7 @@ export default function CompanyHeader({ product }: CompanyHeaderProps) {
                 unoptimized
               />
             ) : (
-              <div className="font-headline font-bold text-xl text-primary/80">
+              <div className="font-headline font-bold text-xl text-on-surface-variant/60">
                 {product.symbol.slice(0, 2)}
               </div>
             )}
@@ -91,7 +91,7 @@ export default function CompanyHeader({ product }: CompanyHeaderProps) {
             href={product.external_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/30 text-xs font-headline font-semibold text-primary transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/30 text-xs font-headline font-semibold text-on-surface transition-colors"
           >
             <span>Open on PreStocks</span>
             <MaterialIcon icon="open_in_new" size="sm" />
@@ -117,7 +117,7 @@ export default function CompanyHeader({ product }: CompanyHeaderProps) {
           </code>
           <button
             onClick={handleCopyContract}
-            className="p-1 rounded text-on-surface-variant hover:text-primary transition-colors"
+            className="p-1 rounded text-on-surface-variant hover:text-on-surface transition-colors"
             title="Copy full contract address"
           >
             <MaterialIcon icon={copied ? "check" : "content_copy"} size="sm" />
@@ -128,7 +128,7 @@ export default function CompanyHeader({ product }: CompanyHeaderProps) {
           href={`https://explorer.solana.com/address/${product.contract_address}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-[11px] text-on-surface-variant hover:text-primary transition-colors font-label uppercase tracking-wider"
+          className="inline-flex items-center gap-1 text-[11px] text-on-surface-variant hover:text-on-surface transition-colors font-label uppercase tracking-wider"
         >
           <span>View on Solana Explorer</span>
           <MaterialIcon icon="open_in_new" size="sm" />

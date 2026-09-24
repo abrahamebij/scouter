@@ -19,7 +19,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/company/${product.symbol.toLowerCase()}`}
-      className="group relative rounded-xl border border-outline-variant/20 bg-surface-container/60 hover:bg-surface-container hover:border-primary/40 transition-all duration-200 flex flex-col justify-between p-5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)] cursor-pointer"
+      className="group relative rounded-xl border border-outline-variant/20 bg-surface-container/60 hover:bg-surface-container hover:border-outline-variant/50 transition-all duration-200 flex flex-col justify-between p-5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.45)] cursor-pointer"
     >
       <div>
         {/* Top Header: Logo, Name, Symbol, Watchlist */}
@@ -37,7 +37,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                   unoptimized
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center font-headline font-bold text-base text-primary/80 bg-primary/5">
+                <div className="w-full h-full flex items-center justify-center font-headline font-bold text-base text-on-surface-variant/50 bg-surface-container-highest">
                   {product.symbol.slice(0, 2)}
                 </div>
               )}
@@ -86,7 +86,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             Implied Valuation
           </div>
           <div
-            className="font-mono font-bold text-base text-on-surface"
+            className="font-mono font-bold text-base text-accent"
             title={`Implied: ${formatCurrency(product.impliedValuation)} | Mark: ${formatCurrency(product.markValuation)}`}
           >
             {formatCompactValuation(product.impliedValuation)}

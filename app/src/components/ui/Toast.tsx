@@ -27,14 +27,14 @@ const ICONS: Record<ToastType, string> = {
 };
 
 const COLORS: Record<ToastType, string> = {
-  success: "border-primary/30 bg-primary/5",
+  success: "border-accent/25 bg-accent/5",
   error: "border-error/30 bg-error/5",
   warning: "border-secondary/30 bg-secondary/5",
   info: "border-outline/30 bg-surface-container-high",
 };
 
 const ICON_COLORS: Record<ToastType, string> = {
-  success: "text-primary",
+  success: "text-accent",
   error: "text-error",
   warning: "text-secondary",
   info: "text-on-surface-variant",
@@ -64,7 +64,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`flex items-start gap-3 px-4 py-3 rounded-xl border backdrop-blur-md shadow-lg animate-in slide-in-from-right ${COLORS[t.type]}`}
+            className={`flex items-start gap-3 px-4 py-3 rounded-xl border backdrop-blur-md shadow-md animate-in slide-in-from-right ${COLORS[t.type]}`}
           >
             <MaterialIcon
               icon={ICONS[t.type]}

@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter, Space_Grotesk } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter, Space_Grotesk, Geist } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ToastProvider } from "@/components/ui/Toast";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-headline",
@@ -40,7 +43,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${plusJakarta.variable} ${inter.variable} ${spaceGrotesk.variable}`}
+      className={cn("dark", plusJakarta.variable, inter.variable, spaceGrotesk.variable, "font-sans", geist.variable)}
     >
       <head>
         {/* eslint-disable-next-line @next/next/no-page-custom-font -- App Router layout */}

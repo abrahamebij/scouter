@@ -25,7 +25,7 @@ export default function ProductSearch({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full pl-10 pr-24 py-2.5 bg-surface-container-high border border-outline-variant/30 rounded-xl text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body"
+        className="w-full pl-10 pr-24 py-2.5 bg-surface-container-high border border-outline-variant/30 rounded-xl text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-outline/60 focus:ring-1 focus:ring-outline/20 transition-all font-body"
       />
       <div className="absolute inset-y-0 right-0 pr-3 flex items-center gap-2">
         {value && (
