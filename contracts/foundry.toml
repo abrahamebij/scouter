@@ -1,0 +1,14 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.24"
+
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "forge-std/=lib/forge-std/src/",
+]
+
+[rpc_endpoints]
+ink_sepolia = "${INK_SEPOLIA_RPC_URL}"
+ethereum = "${ETH_RPC_URL}"

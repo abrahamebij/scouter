@@ -1,0 +1,309 @@
+@import "tailwindcss";
+
+/* Hide number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Custom checkbox */
+.custom-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid rgba(133, 148, 139, 0.4);
+  background: var(--color-surface-container-lowest);
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+.custom-check svg { opacity: 0; transition: opacity 0.15s ease; }
+input:checked + .custom-check {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+input:checked + .custom-check svg { opacity: 1; }
+
+/* Custom radio */
+.custom-radio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(133, 148, 139, 0.4);
+  background: var(--color-surface-container-lowest);
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+.custom-radio::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+input:checked + .custom-radio {
+  border-color: var(--color-primary);
+}
+input:checked + .custom-radio::after { opacity: 1; }
+
+/* ============================================================
+   xYield Design System — "The Sovereign Vault"
+   ============================================================ */
+
+@theme inline {
+  /* Surface Hierarchy */
+  --color-surface: #0f1413;
+  --color-surface-dim: #0f1413;
+  --color-surface-bright: #353a39;
+  --color-surface-container-lowest: #0a0f0e;
+  --color-surface-container-low: #181d1c;
+  --color-surface-container: #1c2120;
+  --color-surface-container-high: #262b2a;
+  --color-surface-container-highest: #313635;
+  --color-surface-variant: #313635;
+  --color-surface-tint: #34e0a4;
+
+  /* Background */
+  --color-background: #0f1413;
+
+  /* Primary */
+  --color-primary: #4ef2b4;
+  --color-primary-container: #1fd59a;
+  --color-primary-fixed: #5cfdbf;
+  --color-primary-fixed-dim: #34e0a4;
+  --color-on-primary: #003826;
+  --color-on-primary-container: #00573c;
+  --color-on-primary-fixed: #002114;
+  --color-on-primary-fixed-variant: #005138;
+  --color-inverse-primary: #006c4c;
+
+  /* Secondary */
+  --color-secondary: #66d4f6;
+  --color-secondary-container: #179dbe;
+  --color-secondary-fixed: #b5ebff;
+  --color-secondary-fixed-dim: #66d4f6;
+  --color-on-secondary: #003543;
+  --color-on-secondary-container: #002e3a;
+  --color-on-secondary-fixed: #001f28;
+  --color-on-secondary-fixed-variant: #004e5f;
+
+  /* Tertiary */
+  --color-tertiary: #d7d8d8;
+  --color-tertiary-container: #bbbcbc;
+  --color-tertiary-fixed: #e2e2e2;
+  --color-tertiary-fixed-dim: #c6c6c7;
+  --color-on-tertiary: #2f3131;
+  --color-on-tertiary-container: #4a4c4c;
+  --color-on-tertiary-fixed: #1a1c1c;
+  --color-on-tertiary-fixed-variant: #454747;
+
+  /* Error */
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-on-error: #690005;
+  --color-on-error-container: #ffdad6;
+
+  /* On-Surface */
+  --color-on-surface: #dfe3e1;
+  --color-on-surface-variant: #bacac0;
+  --color-on-background: #dfe3e1;
+
+  /* Outline */
+  --color-outline: #85948b;
+  --color-outline-variant: #3c4a42;
+
+  /* Inverse */
+  --color-inverse-surface: #dfe3e1;
+  --color-inverse-on-surface: #2c3130;
+
+  /* Fonts */
+  --font-headline: "Plus Jakarta Sans", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-label: "Space Grotesk", sans-serif;
+}
+
+/* Base styles */
+body {
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
+}
+
+::selection {
+  background-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+  color: var(--color-on-surface);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-surface); }
+::-webkit-scrollbar-thumb { background: var(--color-outline-variant); border-radius: 10px; }
+
+/* Material Icons */
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+/* Utility classes */
+.glass-header {
+  background: rgba(15, 20, 19, 0.7);
+  backdrop-filter: blur(20px);
+}
+
+.primary-gradient {
+  background: linear-gradient(135deg, #4ef2b4 0%, #1fd59a 100%);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+.primary-gradient:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(78, 242, 180, 0.3);
+  filter: brightness(1.08);
+}
+.primary-gradient:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 1px 4px rgba(78, 242, 180, 0.15);
+  filter: brightness(0.95);
+}
+
+.glass-card {
+  background: rgba(28, 33, 32, 0.4);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(133, 148, 139, 0.1);
+}
+
+.premium-shadow {
+  box-shadow:
+    0 0 60px -15px rgba(78, 242, 180, 0.1),
+    0 20px 40px -20px rgba(0, 0, 0, 0.5);
+}
+
+.pill-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.pill-hover:hover:not(.bg-primary) {
+  background-color: rgba(78, 242, 180, 0.08);
+  border-color: rgba(78, 242, 180, 0.3);
+  transform: translateY(-1px);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.card-texture {
+  background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+.mesh-glow {
+  background: radial-gradient(circle at 50% 50%, rgba(78, 242, 180, 0.05) 0%, transparent 70%);
+}
+
+.recessed-pocket {
+  background-color: #0a0f0e;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.yield-pulse-mesh {
+  background: radial-gradient(circle at 50% 50%, rgba(102, 212, 246, 0.05) 0%, transparent 70%);
+}
+
+.chart-grid {
+  background-image: radial-gradient(circle at 1px 1px, #3c4a42 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+/* Form controls */
+.input-no-spin::-webkit-outer-spin-button,
+.input-no-spin::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-no-spin[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.terminal-checkbox {
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.35rem;
+  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 70%, transparent);
+  background: var(--color-surface-container-lowest);
+  display: inline-grid;
+  place-items: center;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.terminal-checkbox::after {
+  content: "";
+  width: 0.65rem;
+  height: 0.35rem;
+  border-left: 2px solid var(--color-on-primary);
+  border-bottom: 2px solid var(--color-on-primary);
+  transform: rotate(-45deg) scale(0);
+  transition: transform 0.15s ease;
+  margin-bottom: 0.1rem;
+}
+
+.terminal-checkbox:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-outline-variant));
+}
+
+.terminal-checkbox:checked {
+  background: linear-gradient(135deg, #4ef2b4 0%, #1fd59a 100%);
+  border-color: color-mix(in srgb, var(--color-primary) 80%, transparent);
+}
+
+.terminal-checkbox:checked::after {
+  transform: rotate(-45deg) scale(1);
+}
+
+.terminal-checkbox:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+/* Loading effects */
+@keyframes quote-shimmer {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+
+@keyframes quote-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
+.animate-quote-shimmer {
+  animation: quote-shimmer 1.25s linear infinite;
+}
+
+.animate-quote-pulse {
+  animation: quote-pulse 1.1s ease-in-out infinite;
+}
+
+/* Toast animations */
+@keyframes slide-in-from-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.animate-in { animation: slide-in-from-right 0.25s ease-out; }
+.slide-in-from-right { animation-name: slide-in-from-right; }
