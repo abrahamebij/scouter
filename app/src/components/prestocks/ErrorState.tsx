@@ -43,7 +43,7 @@ export default function ErrorState({
         <div className="pt-2">
           <button
             onClick={onRetry}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/30 text-xs font-headline font-semibold text-primary transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/30 text-xs font-headline font-semibold text-on-surface transition-colors"
           >
             <MaterialIcon icon="refresh" size="sm" />
             <span>Try Again</span>

@@ -69,7 +69,7 @@ export default async function CompanyPage({ params }: CompanyPageProps) {
                 <Link
                   key={sym}
                   href={`/company/${sym.toLowerCase()}`}
-                  className="px-3 py-1.5 rounded-lg bg-surface-container border border-outline-variant/30 text-xs font-mono font-medium text-on-surface hover:text-primary hover:border-primary/40 transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-surface-container border border-outline-variant/30 text-xs font-mono font-medium text-on-surface hover:text-on-surface hover:border-outline/50 transition-colors"
                 >
                   ${sym}
                 </Link>
@@ -112,7 +112,7 @@ export default async function CompanyPage({ params }: CompanyPageProps) {
 
         <Link
           href={`/compare?symbols=${normalizeSymbol(product.symbol)}`}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/30 text-xs font-headline font-semibold text-primary transition-colors flex-shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/30 text-xs font-headline font-semibold text-on-surface transition-colors flex-shrink-0"
         >
           <MaterialIcon icon="compare_arrows" size="sm" />
           <span>Compare ${product.symbol}</span>

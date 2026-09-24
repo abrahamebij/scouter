@@ -45,7 +45,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
       {/* Page Header */}
       <div className="space-y-3 pb-6 border-b border-outline-variant/15">
         <div className="flex items-center gap-2 text-xs text-on-surface-variant font-label">
-          <span className="text-primary font-medium">Terminal</span>
+          <span className="text-on-surface-variant font-medium">Terminal</span>
           <span>/</span>
           <span className="text-on-surface">Compare</span>
         </div>
@@ -61,7 +61,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
             <span className="text-xs font-mono text-on-surface-variant">
               Live Comparative Feed
             </span>

@@ -112,7 +112,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
                 setSearch("");
                 setPremiumFilter("all");
               }}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-container-high border border-outline-variant/30 text-xs font-headline font-medium text-primary hover:bg-surface-container-highest transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-container-high border border-outline-variant/30 text-xs font-headline font-medium text-on-surface hover:bg-surface-container-highest transition-colors"
             >
               <MaterialIcon icon="refresh" size="sm" />
               <span>Reset Filters</span>

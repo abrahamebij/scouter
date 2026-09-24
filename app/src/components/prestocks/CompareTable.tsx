@@ -89,7 +89,7 @@ export default function CompareTable({
                 }
               }}
               defaultValue=""
-              className="bg-surface-container-high border border-outline-variant/30 text-on-surface text-xs rounded-xl px-3 py-2 font-headline focus:outline-none focus:border-primary w-full sm:w-56"
+              className="bg-surface-container-high border border-outline-variant/30 text-on-surface text-xs rounded-xl px-3 py-2 font-headline focus:outline-none focus:border-outline/60 w-full sm:w-56"
             >
               <option value="" disabled>
                 + Add company to compare...
@@ -130,7 +130,7 @@ export default function CompareTable({
                             unoptimized
                           />
                         ) : (
-                          <span className="font-bold text-xs text-primary">
+                          <span className="font-bold text-xs text-on-surface-variant/60">
                             {p.symbol.slice(0, 2)}
                           </span>
                         )}
@@ -138,7 +138,7 @@ export default function CompareTable({
                       <div>
                         <Link
                           href={`/company/${p.symbol.toLowerCase()}`}
-                          className="font-headline font-bold text-sm text-on-surface hover:text-primary transition-colors block"
+                          className="font-headline font-bold text-sm text-on-surface hover:text-on-surface transition-colors block"
                         >
                           {getCompanyName(p.name)}
                         </Link>
@@ -161,7 +161,7 @@ export default function CompareTable({
                     <WatchlistButton symbol={p.symbol} variant="button" size="sm" />
                     <Link
                       href={`/company/${p.symbol.toLowerCase()}`}
-                      className="text-xs text-on-surface-variant hover:text-primary transition-colors inline-flex items-center gap-0.5"
+                      className="text-xs text-on-surface-variant hover:text-on-surface transition-colors inline-flex items-center gap-0.5"
                     >
                       <span>Details</span>
                       <MaterialIcon icon="arrow_forward" size="sm" />
@@ -226,7 +226,7 @@ export default function CompareTable({
               {selectedProducts.map((p) => (
                 <td
                   key={p.symbol}
-                  className="p-4 sm:p-5 font-mono font-bold text-sm text-primary border-l border-outline-variant/15"
+                  className="p-4 sm:p-5 font-mono font-bold text-sm text-accent border-l border-outline-variant/15"
                   title={formatCurrency(p.impliedValuation)}
                 >
                   {formatCompactValuation(p.impliedValuation)}
@@ -283,7 +283,7 @@ export default function CompareTable({
                       href={`https://explorer.solana.com/address/${p.contract_address}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-on-surface-variant hover:text-primary p-1"
+                      className="text-on-surface-variant hover:text-on-surface p-1"
                       title="Open in Solana Explorer"
                     >
                       <MaterialIcon icon="open_in_new" size="sm" />
