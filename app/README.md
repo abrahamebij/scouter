@@ -1,8 +1,8 @@
-# xPrime App
+# Scouter App
 
-Frontend for xPrime, an onchain prime brokerage for tokenized equities.
+Frontend for Scouter, a research and discovery terminal for PreStocks tokenised pre-IPO assets on Solana.
 
-The app brings earn, borrow, trade, hedge, spend, and bridge flows into one interface. In the current codebase, it includes strategy discovery, intent based onboarding, Hyperliquid perp trading, spot xStocks execution across Ink and Ethereum, bridge flows through LiFi, borrow surfaces, spend surfaces, and earnings options ideas.
+Built for the Stocklana hackathon PreStocks bounty.
 
 ## Run locally
 
@@ -11,14 +11,19 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open [http://localhost:3000](http://localhost:3000).
+
+## Checks
+
+```bash
+npm run check
+npm run lint
+```
 
 ## Stack
 
-- Next.js 16
+- Next.js 16 (App Router)
 - React 19
-- TypeScript
-- Reown AppKit + Wagmi
-- Hyperliquid market data and trading
-- CoW Swap for spot execution
-- LiFi for bridging
+- TypeScript 5
+- Tailwind CSS v4
+- Official PreStocks API (`https://prestocks.com/api/prestocks`)

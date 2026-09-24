@@ -21,25 +21,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Stub unused Solana modules pulled in transitively by @coinbase/cdp-sdk
-  turbopack: {
-    resolveAlias: {
-      "@solana/kit": "./src/stubs/empty.js",
-      "@solana-program/system": "./src/stubs/empty.js",
-      "@solana-program/token": "./src/stubs/empty.js",
-    },
-  },
-  // Webpack fallback for non-turbopack builds
-  webpack: (config) => {
-    config.externals.push("pino-pretty", "lokijs", "encoding");
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      "@solana/kit": false,
-      "@solana-program/system": false,
-      "@solana-program/token": false,
-    };
-    return config;
-  },
 };
 
 export default nextConfig;

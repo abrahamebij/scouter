@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useSyncExternalStore, useCallback } from "react";
 import { normalizeSymbol } from "./transforms";
 
 const WATCHLIST_STORAGE_KEY = "scouter_watchlist_symbols";
@@ -51,34 +51,40 @@ export function toggleWatchlistSymbol(symbol: string): boolean {
   return !exists;
 }
 
+function subscribe(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener(WATCHLIST_CHANGE_EVENT, callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    window.removeEventListener(WATCHLIST_CHANGE_EVENT, callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+
+let cachedRaw = "";
+let cachedSnapshot: string[] = [];
+
+function getSnapshot(): string[] {
+  if (typeof window === "undefined") return [];
+  const raw = localStorage.getItem(WATCHLIST_STORAGE_KEY) || "";
+  if (raw !== cachedRaw) {
+    cachedRaw = raw;
+    cachedSnapshot = getSavedWatchlist();
+  }
+  return cachedSnapshot;
+}
+
+const SERVER_SNAPSHOT: string[] = [];
+function getServerSnapshot(): string[] {
+  return SERVER_SNAPSHOT;
+}
+
 /**
- * React hook to access and manage the active watchlist.
+ * React hook to access and manage the active watchlist using React external store subscription.
  */
 export function useWatchlist() {
-  const [symbols, setSymbols] = useState<string[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    setSymbols(getSavedWatchlist());
-    setIsLoaded(true);
-
-    const handleUpdate = (e: Event) => {
-      const detail = (e as CustomEvent<string[]>).detail;
-      if (detail && Array.isArray(detail)) {
-        setSymbols(detail);
-      } else {
-        setSymbols(getSavedWatchlist());
-      }
-    };
-
-    window.addEventListener(WATCHLIST_CHANGE_EVENT, handleUpdate);
-    window.addEventListener("storage", handleUpdate);
-
-    return () => {
-      window.removeEventListener(WATCHLIST_CHANGE_EVENT, handleUpdate);
-      window.removeEventListener("storage", handleUpdate);
-    };
-  }, []);
+  const symbols = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const isLoaded = typeof window !== "undefined";
 
   const toggle = useCallback((symbol: string) => {
     return toggleWatchlistSymbol(symbol);

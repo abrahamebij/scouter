@@ -1,86 +1,107 @@
-# xPrime
+# Scouter
 
-xPrime is an onchain prime brokerage for tokenized equities.
+A research and discovery terminal for **PreStocks tokenised pre-IPO assets** on Solana.
 
-It gives users a unified interface to earn, borrow, trade, hedge, spend, and bridge against xStocks. Users specify their financial intent, and xPrime maps that intent to the right strategy or execution flow.
+Built for the Stocklana hackathon, specifically targeting the **PreStocks bounty**.
 
-## Repo structure
+---
+
+## What is Scouter?
+
+Scouter helps users discover, research, and compare private pre-IPO companies whose valuations are tokenised through PreStocks.
+
+PreStocks tokens are tradable 24/7 on Solana and backed 1:1 by SPV exposure tracking the underlying private company valuation. Scouter provides a professional financial terminal interface to answer:
+
+1. **What PreStocks assets are available?**
+2. **How do their token prices compare with their reference mark prices?**
+3. **What are their implied valuations?**
+4. **How does one asset compare directly with another?**
+5. **Which assets do I want to monitor?**
+
+---
+
+## Core Product Flow
 
 ```text
-app/        Next.js app
-contracts/  Foundry contracts and keeper
+PreStocks Live API
+       ↓
+Scouter Discover
+       ↓
+Find a Company
+       ↓
+Research Token & Mark Metrics
+       ↓
+Side-by-Side Comparison
+       ↓
+Save to Local Watchlist
 ```
 
-## What xPrime is
+---
 
-xPrime is a prime brokerage rebuilt for the internet. It helps users unlock yield, leverage, and liquidity from their stock portfolio without splitting activity across disconnected apps and venues.
+## Key Features
 
-The product is organized around four core flows.
+- **Live PreStocks Data**: Powered by the official PreStocks endpoint (`https://prestocks.com/api/prestocks`) with 60-second caching and error resilience.
+- **Discover Terminal**: Multi-field instant search (name, symbol, description), premium/discount filters, and sorting by implied valuation, token price, mark price, and benchmark variance.
+- **Detailed Research Views**: Detailed metrics breakdown on `/company/[symbol]` with token price, mark price, premium/discount variance, implied valuation, token supply, and Solana token mint copy actions with explorer links.
+- **Objective Comparison**: Direct side-by-side metric inspection of 2–3 companies on `/compare` without arbitrary rankings or gamified scores.
+- **Local Watchlist**: Browser-persistent watchlist on `/watchlist` storing sanitized symbol keys to prevent stale data retention while hydrating metrics in real-time.
+- **Strict Data Integrity**: Derived metrics are explicitly calculated and marked; zero fabricated data or speculative financial advice.
 
-### Earn
+---
 
-xPrime packages structured strategies into simple vault and execution flows.
+## Tech Stack
 
-That includes:
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript 5 (Strict)
+- **Styling**: Tailwind CSS v4 with dark financial terminal design system
+- **State Management**: React 19 `useSyncExternalStore` for external storage synchronization
+- **Icons & Fonts**: Plus Jakarta Sans, Inter, Space Grotesk, Material Symbols Outlined
 
-- tokenized leveraged ETFs
-- USD carry strategy
-- basis trade
-- covered calls
-- wheel strategy
+---
 
-In this repo, the implemented vault contracts are the leveraged ETF vault and the USD carry vault.
+## Project Structure
 
-### Borrow
+```text
+app/
+  src/
+    app/
+      page.tsx                   # Terminal Overview & Market Stats
+      discover/page.tsx          # Main Asset Discovery Terminal
+      company/[symbol]/page.tsx  # In-Depth Company Research
+      compare/page.tsx           # Side-by-Side Comparison Terminal
+      watchlist/page.tsx         # Local Watchlist Feed
+      api/prestocks/route.ts     # Cached API Proxy Handler
+      layout.tsx                 # Persistent Root Terminal Layout
+      globals.css                # Dark Terminal Styling & Theme
+    components/
+      layout/Navbar.tsx          # Terminal Navigation with Mobile Menu
+      layout/Footer.tsx          # Legal & Mechanics Disclaimers
+      prestocks/                 # Scouter Core UI Components
+        ProductCard.tsx
+        ProductGrid.tsx
+        ProductSearch.tsx
+        ProductFilters.tsx
+        MarketStatsStrip.tsx
+        CompanyHeader.tsx
+        TokenMetrics.tsx
+        CompareTable.tsx
+        WatchlistFeed.tsx
+        WatchlistButton.tsx
+        PremiumBadge.tsx
+        SkeletonCard.tsx
+        ErrorState.tsx
+    lib/
+      prestocks/
+        api.ts                   # Centralized API Fetcher & Safe Handlers
+        types.ts                 # PreStock & PreStockDerived Interfaces
+        transforms.ts            # Derived Calculations & Normalization
+        format.ts                # Currency & Valuation Formatters
+        watchlist.ts             # LocalStorage Sync Store
+```
 
-xPrime lets users unlock liquidity without selling their xStocks.
+---
 
-That includes:
-
-- floating rate borrowing against equity collateral
-- fixed term borrowing using collar structures designed for downside protection and no liquidation style borrowing
-
-### Trade
-
-xPrime supports:
-
-- perpetual trading on tokenized equities
-- spot xStocks trading across Ink and Ethereum
-- event driven options trading around earnings through straddle style flows, with broader options flows coming soon via Sts Digital options RFQ
-- hedging flows built on the same positions
-
-### Spend
-
-xPrime includes a digital card flow so users can spend against the value of their holdings.
-
-## How xPrime works
-
-xPrime acts as the discovery, routing, and execution layer for onchain equities.
-
-Users start with a goal, market view, and risk tolerance. xPrime then recommends the right strategy and routes execution across the protocols used by that flow.
-
-In the current codebase:
-
-- Hyperliquid powers perp market data and trading in the terminal
-- CoW Swap powers spot xStocks execution on Ink and Ethereum
-- LiFi powers bridging flows
-- Tydro powers the leveraged ETF vault on Ink Sepolia
-- Morpho and Flowdesk power the carry vault on Ethereum
-- Options coming soon via Sts Digital options RFQ
-
-## Contracts in this repo
-
-`LeveragedVault.sol` is an ERC4626 vault on Ink Sepolia for leveraged SPYx exposure. It uses flash loans and Tydro to create leveraged exposure and a keeper to rebalance back to target leverage.
-
-Vault address: `0x47d144a13bEd591688DeA00890001448F3f96196`
-
-`CarryVault.sol` is an ERC4626 vault on Ethereum for the SPYx aUSD carry strategy. It collateralizes SPYx on Morpho, borrows aUSD, and deposits that aUSD into a Flowdesk vault.
-
-Vault address: `0xfbddeafAdcC77209870b7d70782714AEB40c39Da`
-
-`contracts/keeper` contains the offchain rebalancer for the leveraged vault.
-
-## Run the app
+## Getting Started
 
 ```bash
 cd app
@@ -88,47 +109,11 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Test contracts
-
-```bash
-cd contracts
-forge build
-forge test
-```
-
-## Deploy contracts
-
-Create `contracts/.env` from `contracts/.env.example`.
-
-For Ink Sepolia deployments, set:
+To verify code quality and types:
 
 ```bash
-INK_SEPOLIA_RPC_URL=...
-DEPLOYER_PRIVATE_KEY=...
-```
-
-Deploy the leveraged vault:
-
-```bash
-cd contracts
-forge script script/Deploy.s.sol:Deploy --rpc-url $INK_SEPOLIA_RPC_URL --broadcast
-```
-
-Deploy the carry vault:
-
-```bash
-cd contracts
-forge script script/DeployCarryVault.s.sol:DeployCarryVault --rpc-url $ETH_RPC_URL --broadcast
-```
-
-## Run the keeper
-
-Create `contracts/keeper/.env` from `contracts/keeper/.env.example`, then run:
-
-```bash
-cd contracts/keeper
-npm install
-npm run start
+npm run check
+npm run lint
 ```

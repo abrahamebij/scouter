@@ -3,7 +3,6 @@ import {
   formatCurrency,
   formatCompactValuation,
   formatSupply,
-  formatPercentage,
 } from "@/lib/prestocks/format";
 import PremiumBadge from "./PremiumBadge";
 
