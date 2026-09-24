@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { getPreStocksSafe } from "@/lib/prestocks/api";
 import ProductGrid from "@/components/prestocks/ProductGrid";
+import MarketStatsStrip from "@/components/prestocks/MarketStatsStrip";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 
 export const metadata: Metadata = {
@@ -60,7 +61,10 @@ export default async function DiscoverPage() {
           </div>
         </div>
       ) : (
-        <ProductGrid products={products} />
+        <div className="space-y-8">
+          <MarketStatsStrip products={products} />
+          <ProductGrid products={products} />
+        </div>
       )}
     </div>
   );
