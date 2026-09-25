@@ -71,3 +71,26 @@ export async function getUserProfile(walletAddress: string): Promise<UserProfile
     return null;
   }
 }
+
+/**
+ * Updates user profile in Firebase Firestore.
+ */
+export async function updateUserProfile(
+  walletAddress: string,
+  data: { displayName?: string }
+): Promise<boolean> {
+  if (!walletAddress) return false;
+
+  try {
+    const userRef = doc(db, "users", walletAddress.toLowerCase());
+    await updateDoc(userRef, {
+      ...data,
+      lastSeenAt: Date.now(),
+    });
+    return true;
+  } catch (err) {
+    console.error("Firebase updateUserProfile error:", err);
+    return false;
+  }
+}
+

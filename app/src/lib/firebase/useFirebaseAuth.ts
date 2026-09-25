@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useWallet } from "@solana/connector/react";
-import { syncUserWalletToFirebase, UserProfile } from "./users";
+import type { UserProfile } from "./users";
 
 export function useFirebaseAuth() {
   const { isConnected, isConnecting, account } = useWallet();
@@ -19,12 +19,23 @@ export function useFirebaseAuth() {
       let isCurrent = true;
       setIsSyncing(true);
 
-      syncUserWalletToFirebase(walletAddress)
+      fetch("/api/user/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ walletAddress }),
+      })
         .then((res) => {
-          if (isCurrent && res) {
-            setProfile(res);
+          if (!res.ok) throw new Error("Sync failed");
+          return res.json();
+        })
+        .then((data) => {
+          if (isCurrent && data.profile) {
+            setProfile(data.profile);
             syncedAddressRef.current = walletAddress;
           }
+        })
+        .catch((err) => {
+          console.error("Firebase sync error:", err);
         })
         .finally(() => {
           if (isCurrent) {
