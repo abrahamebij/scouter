@@ -6,6 +6,7 @@ import CompanyHeader from "@/components/prestocks/CompanyHeader";
 import TokenMetrics from "@/components/prestocks/TokenMetrics";
 import WhatChanged from "@/components/prestocks/WhatChanged";
 import ScoutReportCard from "@/components/prestocks/ScoutReportCard";
+import MarketChart from "@/components/market/MarketChart";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 
 interface DashboardCompanyPageProps {
@@ -102,6 +103,9 @@ export default async function DashboardCompanyPage({ params }: DashboardCompanyP
 
       {/* Main Token & Valuation Metrics Grid */}
       <TokenMetrics product={product} />
+
+      {/* Live Market Chart */}
+      <MarketChart product={product} />
 
       {/* What Changed Snapshot System */}
       <WhatChanged product={product} />

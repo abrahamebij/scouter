@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { PreStockDerived } from "@/lib/prestocks/types";
 import { formatCurrency, formatPercentage } from "@/lib/prestocks/format";
 import { useCompanyHistory, saveCompanySnapshot, CompanySnapshot } from "@/lib/prestocks/snapshots";
@@ -18,15 +18,44 @@ const TIMEFRAMES: Timeframe[] = ["1D", "1W", "1M", "3M", "ALL"];
 export default function MarketChart({ product }: MarketChartProps) {
   const [activeTimeframe, setActiveTimeframe] = useState<Timeframe>("1D");
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const [externalHistory, setExternalHistory] = useState<CompanySnapshot[]>([]);
+  const [isLoadingFeed, setIsLoadingFeed] = useState(true);
+
   const { history, isLoaded } = useCompanyHistory(product.symbol);
   const { toast } = useToast();
+
+  // Fetch real on-chain candles and secondary trading history from the API
+  useEffect(() => {
+    let isCurrent = true;
+    setIsLoadingFeed(true);
+
+    fetch(`/api/markets/${product.symbol.toLowerCase()}/history?timeframe=${activeTimeframe}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (isCurrent && data.success && Array.isArray(data.points) && data.points.length > 0) {
+          setExternalHistory(data.points);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load market chart feed:", err);
+      })
+      .finally(() => {
+        if (isCurrent) {
+          setIsLoadingFeed(false);
+        }
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [product.symbol, activeTimeframe]);
 
   const handleManualSnapshot = () => {
     saveCompanySnapshot(product);
     toast("Recorded new snapshot observation for chart", "success");
   };
 
-  // Combine stored history with the current live observation
+  // Combine external on-chain history with any local observations and the live tick
   const combinedHistory = useMemo(() => {
     const livePoint: CompanySnapshot = {
       symbol: product.symbol.toLowerCase(),
@@ -39,45 +68,22 @@ export default function MarketChart({ product }: MarketChartProps) {
       supply: product.supply,
     };
 
-    if (history.length === 0) {
+    const base = externalHistory.length > 0 ? externalHistory : history;
+
+    if (base.length === 0) {
       return [livePoint];
     }
 
-    const last = history[history.length - 1];
+    const last = base[base.length - 1];
     if (Math.abs(livePoint.timestamp - last.timestamp) < 30000) {
-      return history;
+      return base;
     }
-    return [...history, livePoint];
-  }, [history, product]);
+    return [...base, livePoint];
+  }, [externalHistory, history, product]);
 
-  // Filter points according to active timeframe
   const filteredPoints = useMemo(() => {
-    if (combinedHistory.length < 2) return combinedHistory;
-    const now = Date.now();
-    let cutoff = 0;
-
-    switch (activeTimeframe) {
-      case "1D":
-        cutoff = now - 24 * 60 * 60 * 1000;
-        break;
-      case "1W":
-        cutoff = now - 7 * 24 * 60 * 60 * 1000;
-        break;
-      case "1M":
-        cutoff = now - 30 * 24 * 60 * 60 * 1000;
-        break;
-      case "3M":
-        cutoff = now - 90 * 24 * 60 * 60 * 1000;
-        break;
-      case "ALL":
-      default:
-        cutoff = 0;
-        break;
-    }
-
-    const subset = combinedHistory.filter((pt) => pt.timestamp >= cutoff);
-    return subset.length >= 2 ? subset : combinedHistory;
-  }, [combinedHistory, activeTimeframe]);
+    return combinedHistory;
+  }, [combinedHistory]);
 
   const hasEnoughData = filteredPoints.length >= 2;
 
@@ -143,12 +149,18 @@ export default function MarketChart({ product }: MarketChartProps) {
     <div className="bg-surface-container-low border border-outline-variant/20 rounded-2xl p-5 sm:p-6 space-y-4">
       {/* Chart Header Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-outline-variant/15">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <span className="font-headline font-semibold text-xs text-on-surface uppercase tracking-wider">
             Token vs Mark Chart
           </span>
+
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surface-container border border-outline-variant/20 text-[10px] font-mono text-accent">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+            <span>Solana DEX Feed</span>
+          </div>
+
           <span className="text-[11px] font-mono text-on-surface-variant/70">
-            ({filteredPoints.length} {filteredPoints.length === 1 ? "observation" : "observations"})
+            ({filteredPoints.length} {filteredPoints.length === 1 ? "point" : "points"})
           </span>
         </div>
 
@@ -172,12 +184,15 @@ export default function MarketChart({ product }: MarketChartProps) {
       </div>
 
       {/* Main Chart Area */}
-      {!isLoaded ? (
-        <div className="h-64 rounded-xl bg-surface-container/50 animate-pulse flex items-center justify-center">
-          <span className="font-mono text-xs text-on-surface-variant">Loading chart...</span>
+      {!isLoaded || (isLoadingFeed && externalHistory.length === 0) ? (
+        <div className="h-64 rounded-xl bg-surface-container/50 animate-pulse flex flex-col items-center justify-center gap-2">
+          <span className="w-5 h-5 rounded-full border-2 border-accent border-t-transparent animate-spin" />
+          <span className="font-mono text-xs text-on-surface-variant">
+            Connecting to live on-chain market feed...
+          </span>
         </div>
       ) : !hasEnoughData ? (
-        /* Honest Empty State (Phase 6 & 7) */
+        /* Empty State */
         <div className="py-14 px-4 text-center rounded-xl bg-surface-container-lowest/50 border border-dashed border-outline-variant/25 space-y-4">
           <div className="w-10 h-10 mx-auto rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface-variant">
             <MaterialIcon icon="show_chart" size="md" />
@@ -185,10 +200,10 @@ export default function MarketChart({ product }: MarketChartProps) {
 
           <div className="space-y-1.5 max-w-md mx-auto">
             <h3 className="font-headline font-semibold text-sm text-on-surface">
-              Historical data is not available yet
+              Historical data is syncing
             </h3>
             <p className="text-xs text-on-surface-variant leading-relaxed font-light">
-              Scouter never generates artificial chart points. As live secondary market observations are recorded over time, authentic token vs. mark pricing curves will be plotted here.
+              Connecting to Solana DEX liquidity pools to plot live token vs. mark pricing curves.
             </p>
           </div>
 
@@ -207,7 +222,7 @@ export default function MarketChart({ product }: MarketChartProps) {
         /* Authentic SVG Chart */
         <div className="relative space-y-2">
           {/* Active Hover / Current Stats Display */}
-          <div className="flex items-center justify-between text-xs font-mono px-2 py-1 bg-surface-container-lowest/60 rounded-lg border border-outline-variant/15">
+          <div className="flex items-center justify-between text-xs font-mono px-2 py-1.5 bg-surface-container-lowest/60 rounded-lg border border-outline-variant/15">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
                 <span className="w-2.5 h-0.5 bg-accent rounded-full inline-block" />
@@ -228,14 +243,28 @@ export default function MarketChart({ product }: MarketChartProps) {
                   )}
                 </span>
               </div>
+
+              {activeHoverPoint && (
+                <div className="hidden sm:flex items-center gap-1">
+                  <span className="text-on-surface-variant text-[11px]">Premium:</span>
+                  <span
+                    className={`font-semibold ${
+                      activeHoverPoint.pt.premiumPercent >= 0 ? "text-accent" : "text-error"
+                    }`}
+                  >
+                    {formatPercentage(activeHoverPoint.pt.premiumPercent)}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="text-[11px] text-on-surface-variant/70">
               {activeHoverPoint
-                ? new Date(activeHoverPoint.pt.timestamp).toLocaleTimeString([], {
+                ? new Date(activeHoverPoint.pt.timestamp).toLocaleString([], {
+                    month: "short",
+                    day: "numeric",
                     hour: "2-digit",
                     minute: "2-digit",
-                    second: "2-digit",
                   })
                 : "Live Point"}
             </div>

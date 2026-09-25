@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPreStockBySymbol } from "@/lib/prestocks/api";
+import { fetchExternalMarketHistory } from "@/lib/prestocks/externalHistory";
 
 export const revalidate = 60;
 
@@ -19,24 +20,19 @@ export async function GET(req: NextRequest, { params }: RouteProps) {
       );
     }
 
-    // Returns current observation snapshot point
-    const liveSnapshot = {
-      symbol: product.symbol,
-      timestamp: Date.now(),
-      tokenPrice: product.tokenPrice,
-      markPrice: product.markPrice,
-      impliedValuation: product.impliedValuation,
-      markValuation: product.markValuation,
-      premiumPercent: Number(product.premiumPercent.toFixed(2)),
-      supply: product.supply,
-    };
+    const { searchParams } = new URL(req.url);
+    const timeframe = searchParams.get("timeframe") || "1D";
+
+    // Fetch real on-chain candles and market history
+    const points = await fetchExternalMarketHistory(symbol, product, timeframe);
 
     return NextResponse.json({
       success: true,
       symbol: product.symbol,
-      points: [liveSnapshot],
-      count: 1,
-      source: "Scouter Solana Snapshot Engine",
+      points,
+      count: points.length,
+      timeframe,
+      source: "Solana On-Chain DEX & PreStocks Live Feeds",
     });
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Error fetching market history";
