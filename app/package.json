@@ -20,6 +20,7 @@
     "@reown/appkit": "^1.8.19",
     "@reown/appkit-adapter-wagmi": "^1.8.19",
     "@solana/connector": "^0.2.6",
+    "@solana/web3.js": "^1.99.0",
     "@tanstack/react-query": "^5.96.1",
     "axios": "1.14.0",
     "axios-retry": "^4.5.0",

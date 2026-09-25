@@ -3,6 +3,7 @@
 import { useSyncExternalStore, useEffect, useCallback } from "react";
 import { PreStockDerived } from "./types";
 import { normalizeSymbol } from "./transforms";
+import { useMounted } from "./useMounted";
 
 const SNAPSHOTS_STORAGE_KEY = "scouter:snapshots";
 const SNAPSHOTS_CHANGE_EVENT = "scouter_snapshots_change";
@@ -153,7 +154,7 @@ export function useCompanySnapshot(product: PreStockDerived) {
   const allSnapshots = useSyncExternalStore(subscribe, getSnapshotStore, getServerSnapshotStore);
   const norm = normalizeSymbol(product.symbol);
   const snapshot = allSnapshots[norm] || null;
-  const isLoaded = typeof window !== "undefined";
+  const isLoaded = useMounted();
 
   // If first visit, record initial baseline snapshot
   useEffect(() => {

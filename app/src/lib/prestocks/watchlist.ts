@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore, useCallback } from "react";
 import { normalizeSymbol } from "./transforms";
+import { useMounted } from "./useMounted";
 
 const WATCHLIST_STORAGE_KEY = "scouter_watchlist_symbols";
 const WATCHLIST_CHANGE_EVENT = "scouter_watchlist_change";
@@ -84,7 +85,7 @@ function getServerSnapshot(): string[] {
  */
 export function useWatchlist() {
   const symbols = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const isLoaded = typeof window !== "undefined";
+  const isLoaded = useMounted();
 
   const toggle = useCallback((symbol: string) => {
     return toggleWatchlistSymbol(symbol);

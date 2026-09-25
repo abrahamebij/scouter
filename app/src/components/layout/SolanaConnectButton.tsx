@@ -9,8 +9,10 @@ import {
 } from "@solana/connector/react";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { truncateAddress } from "@/lib/prestocks/format";
+import { useMounted } from "@/lib/prestocks/useMounted";
 
 export default function SolanaConnectButton() {
+  const isMounted = useMounted();
   const { isConnected, isConnecting, account } = useWallet();
   const connectors = useWalletConnectors();
   const { connect } = useConnectWallet();
@@ -27,6 +29,18 @@ export default function SolanaConnectButton() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  if (!isMounted) {
+    return (
+      <button
+        disabled
+        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary text-on-primary font-headline font-semibold text-xs opacity-90 shadow-sm"
+      >
+        <MaterialIcon icon="account_balance_wallet" size="sm" />
+        <span>Connect Wallet</span>
+      </button>
+    );
+  }
 
   if (isConnecting) {
     return (

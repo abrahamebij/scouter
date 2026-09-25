@@ -96,15 +96,16 @@ export default async function CompanyPage({ params }: CompanyPageProps) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
       {/* Company Header & Identity */}
       <CompanyHeader product={product} />
+      
+      {/* Gemini Scout Intelligence Brief & Timeline (Phases 20-25, 30-32) */}
+      <ScoutReportCard product={product} />
 
       {/* Main Token & Valuation Metrics Grid */}
       <TokenMetrics product={product} />
 
-      {/* "What Changed?" Snapshot System (Phases 26-29) */}
       <WhatChanged product={product} />
+      {/* "What Changed?" Snapshot System (Phases 26-29) */}
 
-      {/* Gemini Scout Intelligence Brief & Timeline (Phases 20-25, 30-32) */}
-      <ScoutReportCard product={product} />
 
       {/* Action Banner: Compare with other PreStocks */}
       <div className="bg-surface-container-low/60 rounded-2xl border border-outline-variant/20 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
