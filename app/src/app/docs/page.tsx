@@ -24,6 +24,36 @@ export default function DocsIntroductionPage() {
         </p>
       </div>
 
+      {/* Live Deployment Banner */}
+      <div className="p-4 rounded-xl bg-surface-container-low border border-outline-variant/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div className="space-y-1">
+          <div className="text-[10px] font-label uppercase tracking-widest text-accent font-semibold">
+            Live Production Deployment
+          </div>
+          <div className="font-mono text-xs text-on-surface">
+            https://scouter-tool.vercel.app
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <a
+            href="https://scouter-tool.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container border border-outline-variant/30 text-on-surface hover:text-accent font-headline font-semibold transition-colors"
+          >
+            <span>Launch App</span>
+            <MaterialIcon icon="open_in_new" size="sm" />
+          </a>
+          <Link
+            href="/docs/api"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-on-primary font-headline font-semibold hover:brightness-95 transition-all shadow-xs"
+          >
+            <span>API Reference</span>
+            <MaterialIcon icon="arrow_forward" size="sm" />
+          </Link>
+        </div>
+      </div>
+
       {/* Overview Block */}
       <div className="prose prose-invert max-w-none text-xs sm:text-sm text-on-surface-variant leading-relaxed space-y-4 font-light">
         <h2 className="text-lg font-headline font-semibold text-on-surface">

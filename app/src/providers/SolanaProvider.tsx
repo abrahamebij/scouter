@@ -8,7 +8,7 @@ export function SolanaProvider({ children }: { children: ReactNode }) {
   const connectorConfig = useMemo(() => {
     return getDefaultConfig({
       appName: "Scouter",
-      appUrl: typeof window !== "undefined" ? window.location.origin : "https://scouter.app",
+      appUrl: typeof window !== "undefined" ? window.location.origin : "https://scouter-tool.vercel.app",
       autoConnect: true,
       enableMobile: true,
       clusters: [
@@ -28,7 +28,7 @@ export function SolanaProvider({ children }: { children: ReactNode }) {
     () =>
       getDefaultMobileConfig({
         appName: "Scouter",
-        appUrl: typeof window !== "undefined" ? window.location.origin : "https://scouter.app",
+        appUrl: typeof window !== "undefined" ? window.location.origin : "https://scouter-tool.vercel.app",
       }),
     []
   );

@@ -46,7 +46,7 @@ export default function DocsAuthenticationPage() {
           cURL Example
         </h2>
         <pre className="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/20 font-mono text-xs text-on-surface overflow-x-auto">
-{`curl -X GET "https://scouter.app/api/markets/openai" \\
+{`curl -X GET "https://scouter-tool.vercel.app/api/markets/openai" \\
      -H "Authorization: Bearer scouter_live_..." \\
      -H "Accept: application/json"`}
         </pre>

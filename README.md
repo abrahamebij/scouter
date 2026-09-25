@@ -2,6 +2,10 @@
 
 A research and discovery terminal for **PreStocks tokenised pre-IPO assets** on Solana.
 
+- **Live Application**: [https://scouter-tool.vercel.app/](https://scouter-tool.vercel.app/)
+- **Developer Documentation**: [https://scouter-tool.vercel.app/docs](https://scouter-tool.vercel.app/docs)
+- **API Explorer**: [https://scouter-tool.vercel.app/docs/explorer](https://scouter-tool.vercel.app/docs/explorer)
+
 Built for the Stocklana hackathon, specifically targeting the **PreStocks bounty**.
 
 ---

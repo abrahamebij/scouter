@@ -2,6 +2,8 @@
 
 Frontend for Scouter, a research and discovery terminal for PreStocks tokenised pre-IPO assets on Solana.
 
+- **Production Deployment**: [https://scouter-tool.vercel.app/](https://scouter-tool.vercel.app/)
+
 Built for the Stocklana hackathon PreStocks bounty.
 
 ## Run locally

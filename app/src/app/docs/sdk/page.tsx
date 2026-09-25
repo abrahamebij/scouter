@@ -46,8 +46,8 @@ export default function DocsSdkPage() {
 // Initialize with environment API key
 const scouter = new Scouter({
   apiKey: process.env.SCOUTER_API_KEY,
-  // Optional custom baseUrl:
-  // baseUrl: "https://scouter.app"
+  // Optional custom baseUrl (defaults to production):
+  // baseUrl: "https://scouter-tool.vercel.app"
 });`}
           </pre>
         </div>

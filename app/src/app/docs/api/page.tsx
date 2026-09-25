@@ -24,6 +24,21 @@ export default function DocsApiPage() {
         </p>
       </div>
 
+      {/* Production Base URL Banner */}
+      <div className="p-4 rounded-xl bg-surface-container-low border border-outline-variant/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div className="space-y-1">
+          <span className="text-[10px] font-label uppercase tracking-wider text-on-surface-variant/80 font-semibold">
+            Production API Base URL
+          </span>
+          <div className="font-mono text-xs text-accent font-semibold">
+            https://scouter-tool.vercel.app
+          </div>
+        </div>
+        <div className="text-[11px] text-on-surface-variant font-mono">
+          All endpoints below are relative to this production host
+        </div>
+      </div>
+
       <div className="space-y-10 text-xs sm:text-sm text-on-surface-variant leading-relaxed font-light">
         {/* Endpoint 1: GET /api/markets */}
         <div className="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/20 space-y-4">

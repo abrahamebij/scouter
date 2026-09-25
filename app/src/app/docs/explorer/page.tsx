@@ -72,7 +72,7 @@ export default function ApiExplorerPage() {
     }
   };
 
-  const curlCommand = `curl -X GET "${typeof window !== "undefined" ? window.location.origin : "https://scouter.app"}${customPath}" \\
+  const curlCommand = `curl -X GET "${typeof window !== "undefined" ? window.location.origin : "https://scouter-tool.vercel.app"}${customPath}" \\
      -H "Accept: application/json"`;
 
   const handleCopyCurl = () => {
