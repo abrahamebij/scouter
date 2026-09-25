@@ -107,24 +107,34 @@ export default async function CompanyPage({ params }: CompanyPageProps) {
       {/* "What Changed?" Snapshot System (Phases 26-29) */}
 
 
-      {/* Action Banner: Compare with other PreStocks */}
+      {/* Action Banner: Market Terminal & Compare */}
       <div className="bg-surface-container-low/60 rounded-2xl border border-outline-variant/20 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h3 className="font-headline font-bold text-base text-on-surface">
-            Compare with other PreStocks companies
+            Open Market Terminal for {getCompanyName(product.name)}
           </h3>
           <p className="text-xs text-on-surface-variant mt-0.5 font-light">
-            Evaluate {getCompanyName(product.name)} side-by-side with other private market assets.
+            Access live terminal view with real-time trading metrics, snapshot history, and contextual AI intelligence.
           </p>
         </div>
 
-        <Link
-          href={`/compare?symbols=${normalizeSymbol(product.symbol)}`}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/30 text-xs font-headline font-semibold text-on-surface transition-colors flex-shrink-0"
-        >
-          <MaterialIcon icon="compare_arrows" size="sm" />
-          <span>Compare ${product.symbol}</span>
-        </Link>
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <Link
+            href={`/market/${normalizeSymbol(product.symbol)}`}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-on-primary font-headline font-semibold text-xs hover:brightness-95 transition-all"
+          >
+            <MaterialIcon icon="show_chart" size="sm" />
+            <span>Market Terminal</span>
+          </Link>
+
+          <Link
+            href={`/compare?symbols=${normalizeSymbol(product.symbol)}`}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/30 text-xs font-headline font-semibold text-on-surface transition-colors"
+          >
+            <MaterialIcon icon="compare_arrows" size="sm" />
+            <span>Compare</span>
+          </Link>
+        </div>
       </div>
 
       {/* Educational PreStocks Mechanics Disclaimer */}

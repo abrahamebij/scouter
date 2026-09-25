@@ -5,7 +5,7 @@ import { queryIntelligence, ChatMessage } from "@/lib/gemini/intelligence";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { message, history = [], watchlistSymbols = [] } = body;
+    const { message, history = [], watchlistSymbols = [], activeSymbol } = body;
 
     if (!message || typeof message !== "string" || !message.trim()) {
       return NextResponse.json(
@@ -28,11 +28,15 @@ export async function POST(req: NextRequest) {
       ? watchlistSymbols.map(String)
       : [];
 
+    const safeActiveSymbol =
+      typeof activeSymbol === "string" && activeSymbol.trim() ? activeSymbol.trim() : undefined;
+
     const intelligenceResult = await queryIntelligence(
       message.trim(),
       safeHistory,
       allProducts,
-      safeWatchlist
+      safeWatchlist,
+      safeActiveSymbol
     );
 
     return NextResponse.json({

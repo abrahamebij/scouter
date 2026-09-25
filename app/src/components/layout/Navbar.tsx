@@ -11,7 +11,7 @@ const navLinks = [
   { href: "/discover", label: "Discover", icon: "explore" },
   { href: "/compare", label: "Compare", icon: "compare_arrows" },
   { href: "/watchlist", label: "Watchlist", icon: "bookmark" },
-  { href: "/intelligence", label: "Intelligence", icon: "psychology" },
+  { href: "/market", label: "Markets", icon: "show_chart" },
 ];
 
 export default function Navbar() {

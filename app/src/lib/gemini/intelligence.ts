@@ -40,12 +40,21 @@ function extractJson(text: string): string {
 function buildScouterContext(
   query: string,
   allProducts: PreStockDerived[],
-  watchlistSymbols: string[] = []
+  watchlistSymbols: string[] = [],
+  activeSymbol?: string
 ): string {
   const lowerQuery = query.toLowerCase();
 
-  // Match companies referenced in query
+  // Active terminal company context
+  const activeProduct = activeSymbol
+    ? allProducts.find((p) => normalizeSymbol(p.symbol) === normalizeSymbol(activeSymbol))
+    : undefined;
+
+  // Match companies referenced in query (excluding activeProduct to avoid duplicates)
   const matchedProducts = allProducts.filter((p) => {
+    if (activeProduct && normalizeSymbol(p.symbol) === normalizeSymbol(activeProduct.symbol)) {
+      return false;
+    }
     const sym = p.symbol.toLowerCase();
     const name = getCompanyName(p.name).toLowerCase();
     return lowerQuery.includes(sym) || lowerQuery.includes(name);
@@ -69,9 +78,28 @@ Use these EXACT numbers. DO NOT invent, fabricate, or recalculate these figures:
 
 `;
 
-  // Provide high-detail data for specifically requested companies
+  // If inside a dedicated Market Terminal, place active company front and center
+  if (activeProduct) {
+    context += `#### PRIMARY ACTIVE MARKET TERMINAL COMPANY:
+The user is viewing the dedicated Market Terminal for **${getCompanyName(activeProduct.name)}** ($${activeProduct.symbol}).
+Unless the user explicitly specifies another company, assume queries like "What changed?", "Why is it trading above/below mark?", "Explain the valuation", "Give me a research brief", or "What are the latest developments?" refer to ${getCompanyName(activeProduct.name)}.
+- **${getCompanyName(activeProduct.name)}** ($${activeProduct.symbol}):
+  * Token Price: ${formatCurrency(activeProduct.tokenPrice)}
+  * Official Benchmark Mark Price: ${formatCurrency(activeProduct.markPrice)}
+  * Implied Market Valuation: ${formatCompactValuation(activeProduct.impliedValuation)} (${formatCurrency(activeProduct.impliedValuation)})
+  * Benchmark Mark Valuation: ${formatCompactValuation(activeProduct.markValuation)} (${formatCurrency(activeProduct.markValuation)})
+  * Premium / Discount vs Mark: ${formatPercentage(activeProduct.premiumPercent)} (${activeProduct.priceDifference >= 0 ? "+" : ""}${formatCurrency(activeProduct.priceDifference)} / token)
+  * Token Supply: ${activeProduct.supply.toLocaleString()} SPL tokens
+  * Solana Mint Contract: ${activeProduct.contract_address}
+  * PreStocks Description: ${activeProduct.description}
+  * Official Link: ${activeProduct.external_url || "https://prestocks.com"}
+
+`;
+  }
+
+  // Provide high-detail data for specifically requested companies (e.g. cross-company comparison)
   if (matchedProducts.length > 0) {
-    context += `#### SPECIFICALLY REFERENCED COMPANIES:\n`;
+    context += `#### SPECIFICALLY REFERENCED COMPANIES IN QUERY:\n`;
     for (const p of matchedProducts) {
       context += `- **${getCompanyName(p.name)}** ($${p.symbol}):
   * Token Price: ${formatCurrency(p.tokenPrice)}
@@ -119,13 +147,14 @@ Use these EXACT numbers. DO NOT invent, fabricate, or recalculate these figures:
 }
 
 /**
- * Handles a conversation turn with Gemini using live Scouter data and Google Search Grounding.
+ * Handles a conversation turn with the research service using live Scouter data and Search Grounding.
  */
 export async function queryIntelligence(
   userQuery: string,
   history: ChatMessage[],
   allProducts: PreStockDerived[],
-  watchlistSymbols: string[] = []
+  watchlistSymbols: string[] = [],
+  activeSymbol?: string
 ): Promise<IntelligenceResponse> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -134,7 +163,7 @@ export async function queryIntelligence(
     );
   }
 
-  const scouterContext = buildScouterContext(userQuery, allProducts, watchlistSymbols);
+  const scouterContext = buildScouterContext(userQuery, allProducts, watchlistSymbols, activeSymbol);
 
   const systemInstruction = `You are Scouter Intelligence — an elite private-market research assistant and discovery terminal for PreStocks tokenised pre-IPO assets on Solana.
 

@@ -16,6 +16,7 @@ export interface CompanySnapshot {
   impliedValuation: number;
   markValuation: number;
   premiumPercent: number;
+  supply?: number;
 }
 
 export interface SnapshotChange {
@@ -26,6 +27,48 @@ export interface SnapshotChange {
   hasChanges: boolean;
   timeDeltaMs: number;
   previous: CompanySnapshot;
+}
+
+const HISTORY_STORAGE_PREFIX = "scouter:history:";
+const MAX_HISTORY_POINTS = 120;
+
+/**
+ * Reads historical snapshots for a specific symbol from localStorage.
+ */
+export function getCompanySnapshotHistory(symbol: string): CompanySnapshot[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const norm = normalizeSymbol(symbol);
+    const raw = localStorage.getItem(`${HISTORY_STORAGE_PREFIX}${norm}`);
+    if (!raw) return [];
+    const list = JSON.parse(raw);
+    return Array.isArray(list) ? list : [];
+  } catch (err) {
+    console.error("Error reading snapshot history:", err);
+    return [];
+  }
+}
+
+/**
+ * Appends a snapshot to the historical series, avoiding rapid duplicates.
+ */
+export function appendSnapshotHistory(snapshot: CompanySnapshot): void {
+  if (typeof window === "undefined") return;
+  try {
+    const norm = normalizeSymbol(snapshot.symbol);
+    const history = getCompanySnapshotHistory(norm);
+    const last = history[history.length - 1];
+
+    // Deduplicate if recorded less than 45 seconds ago with identical tokenPrice
+    if (last && Math.abs(snapshot.timestamp - last.timestamp) < 45000 && last.tokenPrice === snapshot.tokenPrice) {
+      return;
+    }
+
+    const updated = [...history, snapshot].slice(-MAX_HISTORY_POINTS);
+    localStorage.setItem(`${HISTORY_STORAGE_PREFIX}${norm}`, JSON.stringify(updated));
+  } catch (err) {
+    console.error("Error saving snapshot history:", err);
+  }
 }
 
 /**
@@ -53,7 +96,7 @@ export function getCompanySnapshot(symbol: string): CompanySnapshot | null {
 }
 
 /**
- * Saves a company snapshot into localStorage.
+ * Saves a company snapshot into localStorage and appends to history.
  */
 export function saveCompanySnapshot(product: PreStockDerived): CompanySnapshot {
   const norm = normalizeSymbol(product.symbol);
@@ -65,6 +108,7 @@ export function saveCompanySnapshot(product: PreStockDerived): CompanySnapshot {
     impliedValuation: product.impliedValuation,
     markValuation: product.markValuation,
     premiumPercent: product.premiumPercent,
+    supply: product.supply,
   };
 
   if (typeof window !== "undefined") {
@@ -72,6 +116,7 @@ export function saveCompanySnapshot(product: PreStockDerived): CompanySnapshot {
       const all = getAllSnapshots();
       all[norm] = snapshot;
       localStorage.setItem(SNAPSHOTS_STORAGE_KEY, JSON.stringify(all));
+      appendSnapshotHistory(snapshot);
       window.dispatchEvent(
         new CustomEvent(SNAPSHOTS_CHANGE_EVENT, { detail: { symbol: norm, snapshot } })
       );
@@ -182,3 +227,20 @@ export function useCompanySnapshot(product: PreStockDerived) {
     updateSnapshot,
   };
 }
+
+/**
+ * React hook to observe historical snapshots for a company.
+ */
+export function useCompanyHistory(symbol: string) {
+  const isLoaded = useMounted();
+  const allSnapshots = useSyncExternalStore(subscribe, getSnapshotStore, getServerSnapshotStore);
+  const norm = normalizeSymbol(symbol);
+  const history = isLoaded ? getCompanySnapshotHistory(norm) : [];
+
+  return {
+    history,
+    isLoaded,
+    latestSnapshot: allSnapshots[norm] || null,
+  };
+}
+
