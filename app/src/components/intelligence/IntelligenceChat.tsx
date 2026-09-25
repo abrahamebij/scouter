@@ -4,7 +4,6 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { PreStockDerived } from "@/lib/prestocks/types";
 import { normalizeSymbol } from "@/lib/prestocks/transforms";
 import { useWatchlist } from "@/lib/prestocks/watchlist";
-import MarkdownContent from "./MarkdownContent";
 import TypewriterMarkdown from "@/components/ui/TypewriterMarkdown";
 import ContextualCompanyCard from "./ContextualCompanyCard";
 import MaterialIcon from "@/components/ui/MaterialIcon";
@@ -271,24 +270,12 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
               className={`flex flex-col ${isUser ? "items-end" : "items-start"} space-y-1.5`}
             >
               {/* Role Timestamp Header */}
-              <div className="text-[11px] font-mono text-on-surface-variant/50 px-1 flex items-center gap-2">
-                <span>
-                  {isUser ? "You" : "Scouter"} &bull;{" "}
-                  {new Date(message.timestamp).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
-                {message.id === streamingMessageId && (
-                  <button
-                    onClick={() => setStreamingMessageId(null)}
-                    className="inline-flex items-center gap-1 text-[10px] font-mono text-accent hover:underline transition-colors"
-                    title="Skip typing animation"
-                  >
-                    <MaterialIcon icon="fast_forward" size="sm" />
-                    <span>Skip</span>
-                  </button>
-                )}
+              <div className="text-[11px] font-mono text-on-surface-variant/50 px-1">
+                {isUser ? "You" : "Scouter"} &bull;{" "}
+                {new Date(message.timestamp).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </div>
 
               {/* Message Bubble */}

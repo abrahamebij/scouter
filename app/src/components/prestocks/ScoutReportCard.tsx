@@ -145,10 +145,6 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
     [product.symbol, toast]
   );
 
-  const handleSkipAnimation = useCallback(() => {
-    setAnimationPhase("complete");
-  }, []);
-
   // Uninitialized state: prominent "Scout this company" CTA
   if (!report && !loading && !error) {
     return (
@@ -215,7 +211,6 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
 
   if (!report) return null;
 
-  const isAnimating = animationPhase !== "idle" && animationPhase !== "complete";
   const isBusinessModelVisible = animationPhase === "businessModel" || animationPhase === "facts" || animationPhase === "timeline" || animationPhase === "complete";
   const isFactsVisible = animationPhase === "facts" || animationPhase === "timeline" || animationPhase === "complete";
   const isTimelineVisible = animationPhase === "timeline" || animationPhase === "complete";
@@ -240,17 +235,6 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          {isAnimating && (
-            <button
-              onClick={handleSkipAnimation}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/25 text-[11px] font-mono text-on-surface-variant hover:text-on-surface transition-colors"
-              title="Fast-forward typing animation"
-            >
-              <MaterialIcon icon="fast_forward" size="sm" />
-              <span>Skip</span>
-            </button>
-          )}
-
           <span className="text-[11px] font-mono text-on-surface-variant/70">
             {formatTimeAgo(report.generatedAt)}
           </span>
