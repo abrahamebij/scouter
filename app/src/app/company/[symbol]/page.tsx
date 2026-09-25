@@ -97,7 +97,7 @@ export default async function CompanyPage({ params }: CompanyPageProps) {
       {/* Company Header & Identity */}
       <CompanyHeader product={product} />
       
-      {/* Gemini Scout Intelligence Brief & Timeline (Phases 20-25, 30-32) */}
+      {/* Scout Intelligence Brief & Timeline (Phases 20-25, 30-32) */}
       <ScoutReportCard product={product} />
 
       {/* Main Token & Valuation Metrics Grid */}

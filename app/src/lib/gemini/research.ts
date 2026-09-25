@@ -140,15 +140,15 @@ Provide 3 to 5 recent developments if verified sources exist. Always include acc
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error("Gemini API Error:", response.status, errorText);
-    throw new Error(`Gemini API returned status ${response.status}`);
+    console.error("Research API Error:", response.status, errorText);
+    throw new Error(`Research service returned status ${response.status}`);
   }
 
   const json = await response.json();
   const rawText = json?.candidates?.[0]?.content?.parts?.[0]?.text;
 
   if (!rawText) {
-    throw new Error("Empty or malformed response returned from Gemini API");
+    throw new Error("Empty or malformed response returned from research service");
   }
 
   let parsed: Partial<ScoutReport>;
@@ -156,8 +156,8 @@ Provide 3 to 5 recent developments if verified sources exist. Always include acc
     const jsonString = extractJson(rawText);
     parsed = JSON.parse(jsonString);
   } catch (err) {
-    console.error("Failed to parse Gemini JSON output:", rawText, err);
-    throw new Error("Gemini returned invalid structured JSON");
+    console.error("Failed to parse research JSON output:", rawText, err);
+    throw new Error("Research service returned invalid structured data");
   }
 
   // Extract grounding search metadata / web sources if returned by Gemini

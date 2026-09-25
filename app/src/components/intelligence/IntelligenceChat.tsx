@@ -5,6 +5,7 @@ import { PreStockDerived } from "@/lib/prestocks/types";
 import { normalizeSymbol } from "@/lib/prestocks/transforms";
 import { useWatchlist } from "@/lib/prestocks/watchlist";
 import MarkdownContent from "./MarkdownContent";
+import TypewriterMarkdown from "@/components/ui/TypewriterMarkdown";
 import ContextualCompanyCard from "./ContextualCompanyCard";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useToast } from "@/components/ui/Toast";
@@ -60,6 +61,7 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
   const { symbols: watchlistSymbols } = useWatchlist();
   const { toast } = useToast();
 
@@ -124,6 +126,7 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
         timestamp: Date.now(),
       };
 
+      setStreamingMessageId(assistantMessage.id);
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to generate research response";
@@ -189,10 +192,7 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
       <div className="space-y-6">
         {/* Empty State */}
         {messages.length === 0 && (
-          <div className="py-8 sm:py-14 text-center max-w-2xl mx-auto space-y-8 animate-fade-in">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-surface-container-high border border-outline-variant/30 flex items-center justify-center text-on-surface shadow-md">
-              <MaterialIcon icon="radar" size="lg" />
-            </div>
+          <div className="py-8 text-center max-w-2xl mx-auto space-y-8 animate-fade-in">
 
             <div className="space-y-2">
               <h2 className="font-headline font-bold text-2xl sm:text-3xl text-on-surface tracking-tight">
@@ -239,12 +239,24 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
               className={`flex flex-col ${isUser ? "items-end" : "items-start"} space-y-1.5`}
             >
               {/* Role Timestamp Header */}
-              <div className="text-[11px] font-mono text-on-surface-variant/50 px-1">
-                {isUser ? "You" : "Scouter"} &bull;{" "}
-                {new Date(message.timestamp).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+              <div className="text-[11px] font-mono text-on-surface-variant/50 px-1 flex items-center gap-2">
+                <span>
+                  {isUser ? "You" : "Scouter"} &bull;{" "}
+                  {new Date(message.timestamp).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+                {message.id === streamingMessageId && (
+                  <button
+                    onClick={() => setStreamingMessageId(null)}
+                    className="inline-flex items-center gap-1 text-[10px] font-mono text-accent hover:underline transition-colors"
+                    title="Skip typing animation"
+                  >
+                    <MaterialIcon icon="fast_forward" size="sm" />
+                    <span>Skip</span>
+                  </button>
+                )}
               </div>
 
               {/* Message Bubble */}
@@ -261,11 +273,17 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
                   </p>
                 ) : (
                   <div className="space-y-4">
-                    <MarkdownContent content={message.content} />
+                    <TypewriterMarkdown
+                      content={message.content}
+                      isStreaming={message.id === streamingMessageId}
+                      speedMs={15}
+                      onTick={scrollToBottom}
+                      onComplete={() => setStreamingMessageId(null)}
+                    />
 
                     {/* Contextual Company Cards */}
-                    {referencedProducts.length > 0 && (
-                      <div className="pt-3 border-t border-outline-variant/15 space-y-2">
+                    {message.id !== streamingMessageId && referencedProducts.length > 0 && (
+                      <div className="pt-3 border-t border-outline-variant/15 space-y-2 animate-fade-in">
                         <span className="text-[10px] font-label uppercase tracking-wider text-on-surface-variant/80 font-semibold block">
                           Referenced PreStocks Assets ({referencedProducts.length})
                         </span>
@@ -278,8 +296,8 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
                     )}
 
                     {/* Sources & Citations */}
-                    {message.sources && message.sources.length > 0 && (
-                      <div className="pt-3 border-t border-outline-variant/15 space-y-1.5">
+                    {message.id !== streamingMessageId && message.sources && message.sources.length > 0 && (
+                      <div className="pt-3 border-t border-outline-variant/15 space-y-1.5 animate-fade-in">
                         <span className="text-[10px] font-label uppercase tracking-wider text-on-surface-variant/80 font-semibold block">
                           Sources &amp; Grounding Citations
                         </span>
@@ -306,8 +324,8 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
                     )}
 
                     {/* Follow-up Prompts */}
-                    {message.followUpQuestions && message.followUpQuestions.length > 0 && (
-                      <div className="pt-3 border-t border-outline-variant/10 space-y-1.5">
+                    {message.id !== streamingMessageId && message.followUpQuestions && message.followUpQuestions.length > 0 && (
+                      <div className="pt-3 border-t border-outline-variant/10 space-y-1.5 animate-fade-in">
                         <span className="text-[10px] font-label uppercase tracking-wider text-on-surface-variant/70 block">
                           Explore Further:
                         </span>

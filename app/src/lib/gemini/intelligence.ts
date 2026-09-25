@@ -207,15 +207,15 @@ Return strictly the valid JSON object. Do not wrap in conversational preamble.`;
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error("Gemini Intelligence API Error:", response.status, errorText);
-    throw new Error(`Gemini API returned status ${response.status}`);
+    console.error("Intelligence API Error:", response.status, errorText);
+    throw new Error(`Intelligence service returned status ${response.status}`);
   }
 
   const json = await response.json();
   const rawText = json?.candidates?.[0]?.content?.parts?.[0]?.text;
 
   if (!rawText) {
-    throw new Error("Empty response returned from Gemini API");
+    throw new Error("Empty response returned from research service");
   }
 
   let parsed: Partial<IntelligenceResponse>;
@@ -223,8 +223,8 @@ Return strictly the valid JSON object. Do not wrap in conversational preamble.`;
     const cleanedJson = extractJson(rawText);
     parsed = JSON.parse(cleanedJson);
   } catch (err) {
-    console.error("Failed to parse Gemini Intelligence JSON output:", rawText, err);
-    throw new Error("Gemini returned invalid structured output");
+    console.error("Failed to parse intelligence JSON output:", rawText, err);
+    throw new Error("Unable to parse research intelligence output");
   }
 
   // Extract grounding search metadata / web sources if returned by Gemini

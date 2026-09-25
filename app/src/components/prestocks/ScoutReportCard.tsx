@@ -5,6 +5,7 @@ import { PreStockDerived } from "@/lib/prestocks/types";
 import { getCompanyName } from "@/lib/prestocks/transforms";
 import { ScoutReport } from "@/lib/gemini/schemas";
 import ActivityTimeline from "./ActivityTimeline";
+import TypewriterText from "@/components/ui/TypewriterText";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useToast } from "@/components/ui/Toast";
 
@@ -72,63 +73,7 @@ function TerminalLoader({ symbol }: { symbol: string }) {
           );
         })}
       </div>
-
-      {/* <div className="pt-2 border-t border-outline-variant/10 flex items-center justify-between text-[11px] text-on-surface-variant/60 font-mono">
-        <span>Model: Gemini 2.5 Flash</span>
-        <span>Google Search Grounding: Active</span>
-      </div> */}
     </div>
-  );
-}
-
-interface StreamingWordProps {
-  text: string;
-  speedMs?: number;
-  onComplete?: () => void;
-  showCursor?: boolean;
-}
-
-function StreamingWord({
-  text,
-  speedMs = 36,
-  onComplete,
-  showCursor = true,
-}: StreamingWordProps) {
-  const words = useMemo(() => text.split(" "), [text]);
-  const [wordCount, setWordCount] = useState(0);
-
-  useEffect(() => {
-    setWordCount(0);
-    if (!text || words.length === 0) {
-      onComplete?.();
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setWordCount((prev) => {
-        const next = prev + 1;
-        if (next >= words.length) {
-          clearInterval(interval);
-          onComplete?.();
-          return words.length;
-        }
-        return next;
-      });
-    }, speedMs);
-
-    return () => clearInterval(interval);
-  }, [text, words, speedMs, onComplete]);
-
-  const isDone = wordCount >= words.length;
-  const visible = words.slice(0, wordCount).join(" ");
-
-  return (
-    <span>
-      {visible}
-      {showCursor && !isDone && (
-        <span className="inline-block w-1.5 h-3.5 ml-1 bg-accent align-middle animate-pulse" />
-      )}
-    </span>
   );
 }
 
@@ -153,7 +98,7 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
           const json = await res.json();
           if (json.report && isMounted) {
             setReport(json.report);
-            setAnimationPhase("complete");
+            setAnimationPhase("overview");
           }
         }
       } catch {
@@ -374,9 +319,9 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
           </h4>
           <p className="text-sm text-on-surface leading-relaxed font-light">
             {animationPhase === "overview" ? (
-              <StreamingWord
+              <TypewriterText
                 text={report.overview}
-                speedMs={36}
+                speedMs={16}
                 onComplete={() => {
                   setAnimationPhase(report.businessModel ? "businessModel" : "facts");
                 }}
@@ -394,9 +339,9 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
             </h4>
             <p className="text-sm text-on-surface leading-relaxed font-light">
               {animationPhase === "businessModel" ? (
-                <StreamingWord
+                <TypewriterText
                   text={report.businessModel}
-                  speedMs={36}
+                  speedMs={16}
                   onComplete={() => {
                     setAnimationPhase("facts");
                   }}
@@ -440,9 +385,9 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
                   <li key={i} className="flex items-start gap-2.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-accent/80 mt-1.5 flex-shrink-0" />
                     <span className="leading-relaxed font-light">
-                      <StreamingWord
+                      <TypewriterText
                         text={fact}
-                        speedMs={32}
+                        speedMs={16}
                         onComplete={() => {
                           if (activeFactIndex + 1 < report.notableFacts.length) {
                             setActiveFactIndex((prev) => prev + 1);
