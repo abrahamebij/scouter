@@ -31,6 +31,22 @@ export function setCachedScoutReport(symbol: string, report: ScoutReport): void 
   reportCache.set(norm, { report, cachedAt: Date.now() });
 }
 
+function extractJson(text: string): string {
+  const cleaned = text.trim();
+  // Strip markdown code fences if wrapped or embedded
+  const embeddedMatch = cleaned.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  if (embeddedMatch) {
+    return embeddedMatch[1].trim();
+  }
+  // Fall back to finding the outermost JSON object braces
+  const firstBrace = cleaned.indexOf("{");
+  const lastBrace = cleaned.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    return cleaned.slice(firstBrace, lastBrace + 1);
+  }
+  return cleaned;
+}
+
 /**
  * Generates an intelligence Scout Report for a company using Gemini with Google Search Grounding.
  */
@@ -70,7 +86,7 @@ CRITICAL RULES AND GUARDRAILS:
 3. Do not invent facts, valuation numbers, funding rounds, or sources.
 4. PreStocks tokens represent 1:1 backed SPV economic exposure tracking private company valuation, NOT direct equity or voting rights.
 5. Use Google Search grounding to retrieve verified current public facts and recent developments (last 6-12 months).
-6. Return strictly valid JSON matching the schema below.
+6. Return strictly valid JSON. Do not include markdown commentary or preamble outside the JSON object.
 
 JSON Schema format required:
 {
@@ -105,12 +121,12 @@ JSON Schema format required:
 
 Provide 3 to 5 recent developments if verified sources exist. Always include accurate URLs.`;
 
+  // Note: Gemini API does not allow responseMimeType: "application/json" when tools (googleSearch) are enabled
   const requestBody = {
     contents: [{ parts: [{ text: prompt }] }],
     tools: [{ googleSearch: {} }],
     generationConfig: {
       temperature: 0.2,
-      responseMimeType: "application/json",
     },
   };
 
@@ -137,7 +153,8 @@ Provide 3 to 5 recent developments if verified sources exist. Always include acc
 
   let parsed: Partial<ScoutReport>;
   try {
-    parsed = JSON.parse(rawText);
+    const jsonString = extractJson(rawText);
+    parsed = JSON.parse(jsonString);
   } catch (err) {
     console.error("Failed to parse Gemini JSON output:", rawText, err);
     throw new Error("Gemini returned invalid structured JSON");

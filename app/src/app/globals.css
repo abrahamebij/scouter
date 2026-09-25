@@ -27,12 +27,17 @@ input[type="number"] {
   transition: all 0.15s ease;
   flex-shrink: 0;
 }
-.custom-check svg { opacity: 0; transition: opacity 0.15s ease; }
+.custom-check svg {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
 input:checked + .custom-check {
   background: var(--color-primary);
   border-color: var(--color-primary);
 }
-input:checked + .custom-check svg { opacity: 1; }
+input:checked + .custom-check svg {
+  opacity: 1;
+}
 
 /* Custom radio */
 .custom-radio {
@@ -59,7 +64,9 @@ input:checked + .custom-check svg { opacity: 1; }
 input:checked + .custom-radio {
   border-color: var(--color-primary);
 }
-input:checked + .custom-radio::after { opacity: 1; }
+input:checked + .custom-radio::after {
+  opacity: 1;
+}
 
 /* ============================================================
    Scouter Design System — Charcoal Terminal
@@ -136,7 +143,6 @@ input:checked + .custom-radio::after { opacity: 1; }
   --color-inverse-surface: #ededea;
   --color-inverse-on-surface: #1f1f1f;
 
-
   /* Fonts */
   --font-headline: "Plus Jakarta Sans", sans-serif;
   --font-body: "Inter", sans-serif;
@@ -162,8 +168,6 @@ input:checked + .custom-radio::after { opacity: 1; }
   --color-popover-foreground: var(--popover-foreground);
 }
 
-
-
 /* Base styles */
 body {
   background-color: var(--color-surface);
@@ -177,13 +181,24 @@ body {
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--color-surface); }
-::-webkit-scrollbar-thumb { background: var(--color-outline-variant); border-radius: 10px; }
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: 10px;
+}
 
 /* Material Icons */
 .material-symbols-outlined {
-  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
 }
 
 /* Utility classes */
@@ -204,12 +219,20 @@ body {
 }
 
 .card-texture {
-  background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0);
+  background-image: radial-gradient(
+    circle at 2px 2px,
+    rgba(255, 255, 255, 0.03) 1px,
+    transparent 0
+  );
   background-size: 24px 24px;
 }
 
 .chart-grid {
-  background-image: radial-gradient(circle at 1px 1px, #2a2a2a 1px, transparent 0);
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    #2a2a2a 1px,
+    transparent 0
+  );
   background-size: 40px 40px;
 }
 
@@ -242,7 +265,10 @@ body {
   background: var(--color-surface-container-lowest);
   display: inline-grid;
   place-items: center;
-  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .terminal-checkbox::after {
@@ -276,13 +302,22 @@ body {
 
 /* Loading effects */
 @keyframes quote-shimmer {
-  0% { transform: translateX(-120%); }
-  100% { transform: translateX(120%); }
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
 }
 
 @keyframes quote-pulse {
-  0%, 100% { opacity: 0.45; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .animate-quote-shimmer {
@@ -295,11 +330,21 @@ body {
 
 /* Toast animations */
 @keyframes slide-in-from-right {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
-.animate-in { animation: slide-in-from-right 0.25s ease-out; }
-.slide-in-from-right { animation-name: slide-in-from-right; }
+.animate-in {
+  animation: slide-in-from-right 0.25s ease-out;
+}
+.slide-in-from-right {
+  animation-name: slide-in-from-right;
+}
 
 /* shadcn component variables — scoped so they don't override our design system */
 :root {
@@ -314,4 +359,8 @@ body {
   --popover-foreground: oklch(0.985 0 0);
   --card: oklch(0.175 0 0);
   --card-foreground: oklch(0.985 0 0);
+}
+
+button {
+  cursor: pointer;
 }
