@@ -104,10 +104,7 @@ export default function HeroSection() {
       <div className="relative z-10 w-full max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-end pt-16 sm:pt-20">
         {/* Lower-Left Bold Title Typography */}
         <div className="lg:col-span-7 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 border border-white/10 backdrop-blur-md text-[11px] font-mono text-accent">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-            <span>PreStocks Secondary Markets</span>
-          </div>
+        
 
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-headline font-extrabold tracking-tight text-white leading-[1.06]">
             Empowering the <br />
