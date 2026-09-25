@@ -6,6 +6,7 @@ import { PreStockDerived } from "@/lib/prestocks/types";
 import { normalizeSymbol } from "@/lib/prestocks/transforms";
 import { useWatchlist } from "@/lib/prestocks/watchlist";
 import ProductCard from "./ProductCard";
+import WatchlistChangeIndicator from "./WatchlistChangeIndicator";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { formatCompactValuation } from "@/lib/prestocks/format";
 
@@ -103,7 +104,15 @@ export default function WatchlistFeed({ allProducts }: WatchlistFeedProps) {
       {/* Grid of Saved Assets */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {watchlistProducts.map((product) => (
-          <ProductCard key={product.symbol} product={product} />
+          <div key={product.symbol} className="flex flex-col gap-2">
+            <ProductCard product={product} />
+            <div className="px-3 py-1.5 rounded-lg bg-surface-container-low/70 border border-outline-variant/15 flex items-center justify-between text-xs">
+              <span className="text-[10px] font-label uppercase tracking-wider text-on-surface-variant/80">
+                Snapshot:
+              </span>
+              <WatchlistChangeIndicator product={product} />
+            </div>
+          </div>
         ))}
       </div>
     </div>

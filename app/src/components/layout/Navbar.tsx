@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import SolanaConnectButton from "./SolanaConnectButton";
 
 const navLinks = [
   { href: "/discover", label: "Discover", icon: "explore" },
@@ -58,9 +59,9 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Right Status / Links */}
+        {/* Right Status, Wallet & Links */}
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/20 text-xs">
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/20 text-xs">
             <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
             <span className="text-on-surface-variant font-label text-[11px] tracking-wide">
               PreStocks API Active
@@ -77,6 +78,9 @@ export default function Navbar() {
             <MaterialIcon icon="open_in_new" size="sm" />
           </a>
 
+          {/* Solana ConnectorKit Connect Button */}
+          <SolanaConnectButton />
+
           {/* Mobile hamburger button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -90,7 +94,7 @@ export default function Navbar() {
 
       {/* Mobile dropdown menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-surface-container-low border-b border-outline-variant/20 px-4 py-3 space-y-1">
+        <div className="md:hidden bg-surface-container-low border-b border-outline-variant/20 px-4 py-3 space-y-2">
           {navLinks.map((link) => {
             const isActive =
               pathname === link.href ||

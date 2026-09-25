@@ -4,6 +4,8 @@ import { getPreStockBySymbol, fetchPreStocks } from "@/lib/prestocks/api";
 import { normalizeSymbol, getCompanyName } from "@/lib/prestocks/transforms";
 import CompanyHeader from "@/components/prestocks/CompanyHeader";
 import TokenMetrics from "@/components/prestocks/TokenMetrics";
+import WhatChanged from "@/components/prestocks/WhatChanged";
+import ScoutReportCard from "@/components/prestocks/ScoutReportCard";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 
 interface CompanyPageProps {
@@ -35,7 +37,6 @@ export default async function CompanyPage({ params }: CompanyPageProps) {
   const product = await getPreStockBySymbol(symbol);
 
   if (!product) {
-    // Retrieve all valid symbols to help the user navigate
     let allSymbols: string[] = [];
     try {
       const all = await fetchPreStocks();
@@ -99,13 +100,19 @@ export default async function CompanyPage({ params }: CompanyPageProps) {
       {/* Main Token & Valuation Metrics Grid */}
       <TokenMetrics product={product} />
 
+      {/* "What Changed?" Snapshot System (Phases 26-29) */}
+      <WhatChanged product={product} />
+
+      {/* Gemini Scout Intelligence Brief & Timeline (Phases 20-25, 30-32) */}
+      <ScoutReportCard product={product} />
+
       {/* Action Banner: Compare with other PreStocks */}
       <div className="bg-surface-container-low/60 rounded-2xl border border-outline-variant/20 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h3 className="font-headline font-bold text-base text-on-surface">
             Compare with other PreStocks companies
           </h3>
-          <p className="text-xs text-on-surface-variant mt-0.5">
+          <p className="text-xs text-on-surface-variant mt-0.5 font-light">
             Evaluate {getCompanyName(product.name)} side-by-side with other private market assets.
           </p>
         </div>
@@ -124,10 +131,10 @@ export default async function CompanyPage({ params }: CompanyPageProps) {
         <h4 className="font-label uppercase tracking-wider text-[11px] text-on-surface font-bold">
           PreStocks Asset Structure Notice
         </h4>
-        <p className="leading-relaxed">
+        <p className="leading-relaxed font-light">
           The <span className="font-mono text-on-surface font-medium">${product.symbol}</span> token is issued through PreStocks and backed 1:1 by SPV exposure tracking the valuation of {getCompanyName(product.name)}. PreStocks tokens trade 24/7 on the Solana blockchain.
         </p>
-        <p className="leading-relaxed text-[11px] text-on-surface-variant/70">
+        <p className="leading-relaxed text-[11px] text-on-surface-variant/70 font-light">
           PreStocks tokens represent synthetic economic exposure rather than direct registered equity or shareholder ownership. Mark prices are provided as benchmark reference points.
         </p>
       </div>

@@ -13,6 +13,7 @@
     "@base-ui/react": "^1.8.0",
     "@cowprotocol/cow-sdk": "^8.0.5",
     "@cowprotocol/sdk-viem-adapter": "^0.3.15",
+    "@google/genai": "^2.24.0",
     "@lifi/sdk": "^4.0.0-alpha.1",
     "@lifi/sdk-provider-ethereum": "^4.0.0-alpha.1",
     "@msgpack/msgpack": "^3.1.3",
