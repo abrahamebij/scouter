@@ -7,7 +7,7 @@ const reportCache = new Map<string, { report: ScoutReport; cachedAt: number }>()
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 const GEMINI_API_BASE =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent";
 
 /**
  * Retrieves a cached ScoutReport if fresh.
