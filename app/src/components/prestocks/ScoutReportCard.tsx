@@ -51,7 +51,7 @@ function TerminalLoader({ symbol }: { symbol: string }) {
             Scout Agent &bull; Live Grounding
           </span>
         </div>
-        <span className="font-mono text-xs text-accent bg-accent/8 border border-accent/20 px-2 py-0.5 rounded">
+        <span className="font-mono text-xs text-accent font-semibold">
           ${symbol}
         </span>
       </div>

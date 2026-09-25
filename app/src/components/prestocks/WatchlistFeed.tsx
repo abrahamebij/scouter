@@ -78,9 +78,6 @@ export default function WatchlistFeed({ allProducts }: WatchlistFeedProps) {
             <h2 className="font-headline font-bold text-base text-on-surface">
               Monitored Assets ({watchlistProducts.length})
             </h2>
-            <span className="text-[11px] font-mono text-accent bg-accent/8 border border-accent/15 px-2 py-0.5 rounded-full">
-              Live Matched
-            </span>
           </div>
           <p className="text-xs text-on-surface-variant mt-1 font-light">
             Combined Implied Valuation:{" "}

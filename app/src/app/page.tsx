@@ -25,9 +25,9 @@ export default async function HomePage() {
       {/* Terminal Hero Section */}
       <section className="text-center sm:text-left pt-6 pb-2 border-b border-outline-variant/15 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/25 text-xs">
+          <div className="flex items-center gap-2 text-xs">
             <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            <span className="font-label uppercase tracking-widest text-[11px] text-on-surface-variant">
+            <span className="font-label uppercase tracking-widest text-[11px] text-on-surface-variant font-medium">
               PreStocks Solana Terminal
             </span>
           </div>

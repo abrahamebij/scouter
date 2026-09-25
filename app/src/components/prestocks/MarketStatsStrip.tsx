@@ -40,9 +40,6 @@ export default function MarketStatsStrip({ products }: MarketStatsStripProps) {
           <span className="font-mono text-xl font-bold text-on-surface">
             {totalAssets}
           </span>
-          <span className="text-[10px] font-label uppercase tracking-widest text-accent/80 bg-accent/8 px-2 py-0.5 rounded">
-            Live SPL
-          </span>
         </div>
         <div className="text-[11px] text-on-surface-variant/70 mt-1">
           {premiumCount} at premium, {discountCount} at discount
@@ -93,9 +90,6 @@ export default function MarketStatsStrip({ products }: MarketStatsStripProps) {
         <div className="mt-2 flex items-baseline justify-between">
           <span className="font-mono text-xl font-bold text-on-surface">
             {formatPercentage(avgPremium)}
-          </span>
-          <span className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant/70 bg-surface-container px-2 py-0.5 rounded border border-outline-variant/20">
-            Market Avg
           </span>
         </div>
         <div className="text-[11px] text-on-surface-variant/70 mt-1">

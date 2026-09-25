@@ -1,21 +1,8 @@
-import { ResearchEvent, EventCategory } from "@/lib/gemini/schemas";
+import { ResearchEvent } from "@/lib/gemini/schemas";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 
 interface ActivityTimelineProps {
   events: ResearchEvent[];
-}
-
-function getCategoryBadge(category: EventCategory) {
-  switch (category) {
-    case "funding":
-    case "prestocks":
-      return "bg-accent/8 text-accent border-accent/20";
-    case "regulatory":
-    case "market":
-      return "bg-secondary/10 text-secondary border-secondary/25";
-    default:
-      return "bg-surface-container-high text-on-surface-variant border-outline-variant/30";
-  }
 }
 
 export default function ActivityTimeline({ events }: ActivityTimelineProps) {
@@ -37,11 +24,7 @@ export default function ActivityTimeline({ events }: ActivityTimelineProps) {
           {/* Event Content Box */}
           <div className="p-4 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/15 hover:border-outline-variant/35 transition-colors space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span
-                className={`font-label uppercase tracking-wider text-[10px] px-2 py-0.5 rounded border ${getCategoryBadge(
-                  event.category
-                )}`}
-              >
+              <span className="font-label uppercase tracking-wider text-[10px] text-accent font-semibold">
                 {event.category}
               </span>
 

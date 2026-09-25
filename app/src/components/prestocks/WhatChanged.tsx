@@ -51,9 +51,6 @@ export default function WhatChanged({ product }: WhatChangedProps) {
             <h3 className="font-headline font-bold text-base text-on-surface">
               What Changed?
             </h3>
-            <span className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant/25">
-              Local Snapshot
-            </span>
           </div>
           <p className="text-xs text-on-surface-variant mt-0.5 font-light">
             Tracks shifts in PreStocks secondary pricing and implied valuation since your last observation.

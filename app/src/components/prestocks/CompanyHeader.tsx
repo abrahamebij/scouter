@@ -40,7 +40,7 @@ export default function CompanyHeader({ product }: CompanyHeaderProps) {
           <span>Back to Discover</span>
         </Link>
 
-        <span className="font-label text-[11px] uppercase tracking-wider text-accent/80 bg-accent/8 border border-accent/15 px-2.5 py-0.5 rounded-full">
+        <span className="font-label text-[11px] uppercase tracking-wider text-accent font-semibold">
           PreStocks Asset
         </span>
       </div>

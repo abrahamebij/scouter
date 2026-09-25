@@ -64,7 +64,7 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
   const { toast } = useToast();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -138,14 +138,7 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setLoading(false);
-      textareaRef.current?.focus();
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
+      inputRef.current?.focus();
     }
   };
 
@@ -163,27 +156,22 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] max-w-5xl mx-auto w-full px-4 sm:px-6 py-4">
+    <div className="min-h-[calc(100vh-4rem)] max-w-4xl mx-auto w-full px-4 sm:px-6 pt-4 pb-28">
       {/* Top Workspace Bar */}
-      <div className="flex items-center justify-between pb-3 border-b border-outline-variant/15 flex-shrink-0 mb-4">
-        <div className="flex items-center gap-2.5">
+      <div className="flex items-center justify-between border-b border-outline-variant/15 shrink-0">
+        {/* <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-surface-container-high border border-outline-variant/30 flex items-center justify-center text-on-surface">
             <MaterialIcon icon="psychology" size="sm" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-headline font-bold text-base text-on-surface">
-                Intelligence Workspace
-              </h1>
-              <span className="text-[10px] font-label uppercase tracking-widest text-accent bg-accent/8 border border-accent/20 px-2 py-0.5 rounded">
-                Grounded
-              </span>
-            </div>
+            <h1 className="font-headline font-bold text-base text-on-surface">
+              Intelligence Workspace
+            </h1>
             <p className="text-[11px] text-on-surface-variant font-light -mt-0.5">
               Personalized private-market research grounded in PreStocks Solana data &amp; Google Search.
             </p>
           </div>
-        </div>
+        </div> */}
 
         {messages.length > 0 && (
           <button
@@ -197,8 +185,8 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
         )}
       </div>
 
-      {/* Main Conversation Scroll Area */}
-      <div className="flex-1 overflow-y-auto space-y-6 pr-1 custom-scrollbar">
+      {/* Main Conversation Area (Uses page scrollbar) */}
+      <div className="space-y-6">
         {/* Empty State */}
         {messages.length === 0 && (
           <div className="py-8 sm:py-14 text-center max-w-2xl mx-auto space-y-8 animate-fade-in">
@@ -248,19 +236,15 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
           return (
             <div
               key={message.id}
-              className={`flex flex-col ${isUser ? "items-end" : "items-start"} space-y-2`}
+              className={`flex flex-col ${isUser ? "items-end" : "items-start"} space-y-1.5`}
             >
-              {/* Role Header Badge */}
-              <div className="flex items-center gap-2 px-1">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-on-surface-variant/70">
-                  {isUser ? "You" : "Scouter Intelligence"}
-                </span>
-                <span className="text-[10px] font-mono text-on-surface-variant/40">
-                  {new Date(message.timestamp).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
+              {/* Role Timestamp Header */}
+              <div className="text-[11px] font-mono text-on-surface-variant/50 px-1">
+                {isUser ? "You" : "Scouter"} &bull;{" "}
+                {new Date(message.timestamp).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </div>
 
               {/* Message Bubble */}
@@ -350,19 +334,13 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
 
         {/* Loading Indicator */}
         {loading && (
-          <div className="flex flex-col items-start space-y-2">
-            <div className="flex items-center gap-2 px-1">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-on-surface-variant/70">
-                Scouter Intelligence
-              </span>
+          <div className="flex flex-col items-start space-y-1.5">
+            <div className="text-[11px] font-mono text-on-surface-variant/50 px-1">
+              Scouter
             </div>
-            <div className="rounded-2xl p-4 sm:p-5 bg-surface-container-low border border-outline-variant/20 space-y-2.5 max-w-xl w-full">
+            <div className="p-2">
               <div className="flex items-center gap-2.5 font-mono text-xs text-on-surface">
                 <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
-                <span>Grounding private market intelligence with Gemini...</span>
-              </div>
-              <div className="h-1 bg-surface-container-high rounded overflow-hidden">
-                <div className="h-full bg-accent/70 rounded w-1/3 animate-pulse" />
               </div>
             </div>
           </div>
@@ -371,45 +349,39 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Dock */}
-      <div className="pt-3 border-t border-outline-variant/15 flex-shrink-0">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSubmit();
-          }}
-          className="relative rounded-2xl bg-surface-container-low border border-outline-variant/30 focus-within:border-outline-variant/60 focus-within:ring-1 focus-within:ring-outline-variant/30 transition-all p-2 sm:p-3 shadow-md"
-        >
-          <textarea
-            ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask Scouter anything about private companies, valuations, or your watchlist... (Enter to send, Shift+Enter for new line)"
-            rows={2}
-            disabled={loading}
-            className="w-full bg-transparent text-xs sm:text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none resize-none pr-12 font-light leading-relaxed"
-          />
-
-          <div className="flex items-center justify-between pt-1 text-[11px] text-on-surface-variant/60">
-            <span className="hidden sm:inline font-mono">
-              Enter ↵ to send &bull; Shift+Enter for newline
-            </span>
-
+      {/* Fixed Bottom Compact Input Dock */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-surface/90 backdrop-blur-md border-t border-outline-variant/20 py-2.5">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit();
+            }}
+            className="flex items-center gap-2 rounded-xl bg-surface-container border border-outline-variant/30 focus-within:border-outline-variant/60 focus-within:ring-1 focus-within:ring-outline-variant/30 px-3.5 py-1.5 transition-all shadow-lg shadow-black/40"
+          >
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask about private companies, valuations, or your watchlist..."
+              disabled={loading}
+              className="flex-1 bg-transparent text-xs sm:text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none font-light py-1"
+            />
             <button
               type="submit"
               disabled={!input.trim() || loading}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-headline font-semibold text-xs transition-all ${
+              className={`inline-flex items-center justify-center w-8 h-8 rounded-lg font-headline font-semibold text-xs transition-all flex-shrink-0 ${
                 input.trim() && !loading
                   ? "bg-primary text-on-primary hover:brightness-95 shadow-sm cursor-pointer"
-                  : "bg-surface-container-high text-on-surface-variant/40 cursor-not-allowed"
+                  : "bg-surface-container-high text-on-surface-variant/30 cursor-not-allowed"
               }`}
+              title="Send message"
             >
-              <span>Send</span>
               <MaterialIcon icon="arrow_upward" size="sm" />
             </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );
