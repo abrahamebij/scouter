@@ -88,13 +88,60 @@ function RenderImage({ src, alt = "Attached image", caption }: RenderImageProps)
   );
 }
 
+interface CodeBlockProps {
+  code: string;
+  language?: string;
+}
+
+function CodeBlock({ code, language }: CodeBlockProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback
+    }
+  };
+
+  const displayLang = language ? language.trim().toLowerCase() : "code";
+
+  return (
+    <div className="my-3 rounded-xl border border-outline-variant/20 bg-surface-container-lowest overflow-hidden shadow-xs">
+      <div className="flex items-center justify-between px-3.5 py-1.5 bg-surface-container-high/40 border-b border-outline-variant/15 text-[11px] font-mono text-on-surface-variant">
+        <span className="uppercase tracking-wider font-semibold text-[10px] text-accent/80">
+          {displayLang}
+        </span>
+        <button
+          type="button"
+          onClick={handleCopy}
+          aria-label="Copy code"
+          className="flex items-center gap-1 hover:text-on-surface text-on-surface-variant transition-colors cursor-pointer"
+        >
+          <MaterialIcon
+            icon={copied ? "check" : "content_copy"}
+            size="sm"
+            className={copied ? "text-accent" : ""}
+          />
+          <span className="text-[10px]">{copied ? "Copied" : "Copy"}</span>
+        </button>
+      </div>
+      <pre className="p-3.5 text-xs font-mono text-on-surface overflow-x-auto leading-relaxed whitespace-pre">
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+}
+
 interface MarkdownContentProps {
   content: string;
 }
 
 /**
  * Lightweight, zero-dependency Markdown renderer tailored for Scouter terminal output.
- * Formats headings, bullet lists, markdown tables, bold text, code tags, links, and inline images.
+ * Formats headings, bullet lists, markdown tables, bold text, code tags, multi-line code blocks, links, and inline images.
  */
 export default function MarkdownContent({ content }: MarkdownContentProps) {
   const lines = content.split("\n");
@@ -104,6 +151,24 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
   let inTable = false;
   let inList = false;
   let listItems: string[] = [];
+  let inCode = false;
+  let codeBuffer: string[] = [];
+  let codeLang = "";
+
+  function flushCode(key: number) {
+    if (codeBuffer.length > 0 || inCode) {
+      renderedElements.push(
+        <CodeBlock
+          key={`code-${key}`}
+          code={codeBuffer.join("\n")}
+          language={codeLang}
+        />
+      );
+      codeBuffer = [];
+      codeLang = "";
+    }
+    inCode = false;
+  }
 
   function flushList(key: number) {
     if (listItems.length > 0) {
@@ -169,6 +234,25 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
   for (let i = 0; i < lines.length; i++) {
     const rawLine = lines[i];
     const line = rawLine.trim();
+
+    // Multi-line code fence detection
+    if (rawLine.trimStart().startsWith("```")) {
+      if (inCode) {
+        flushCode(i);
+      } else {
+        if (inList) flushList(i);
+        if (inTable) flushTable(i);
+        inCode = true;
+        codeLang = rawLine.trimStart().slice(3).trim();
+        codeBuffer = [];
+      }
+      continue;
+    }
+
+    if (inCode) {
+      codeBuffer.push(rawLine);
+      continue;
+    }
 
     // Table detection
     if (line.startsWith("|") && line.endsWith("|")) {
@@ -254,6 +338,7 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
     );
   }
 
+  if (inCode) flushCode(lines.length);
   if (inTable) flushTable(lines.length);
   if (inList) flushList(lines.length);
 

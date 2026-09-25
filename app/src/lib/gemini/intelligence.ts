@@ -21,10 +21,11 @@ const GEMINI_API_BASE =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent";
 
 function extractJson(text: string): string {
-  const cleaned = text.trim();
-  const embeddedMatch = cleaned.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-  if (embeddedMatch) {
-    return embeddedMatch[1].trim();
+  let cleaned = text.trim();
+  if (cleaned.startsWith("```")) {
+    cleaned = cleaned.replace(/^```(?:json)?\s*\r?\n?/i, "");
+    cleaned = cleaned.replace(/\r?\n?```\s*$/i, "");
+    cleaned = cleaned.trim();
   }
   const firstBrace = cleaned.indexOf("{");
   const lastBrace = cleaned.lastIndexOf("}");
@@ -32,6 +33,112 @@ function extractJson(text: string): string {
     return cleaned.slice(firstBrace, lastBrace + 1);
   }
   return cleaned;
+}
+
+function parseIntelligenceResponse(
+  rawText: string,
+  allProducts: PreStockDerived[]
+): Partial<IntelligenceResponse> {
+  const cleanedJson = extractJson(rawText);
+
+  // 1. Direct standard parse
+  try {
+    return JSON.parse(cleanedJson);
+  } catch {
+    // Continue
+  }
+
+  // 2. Sanitize unescaped newlines inside strings
+  try {
+    const sanitized = cleanedJson.replace(/(?<=:\s*"[\s\S]*?)\r?\n(?=[\s\S]*?")/g, "\\n");
+    return JSON.parse(sanitized);
+  } catch {
+    // Continue
+  }
+
+  // 3. Regex extraction of "answer" field
+  try {
+    const answerMatch =
+      cleanedJson.match(/"answer"\s*:\s*"([\s\S]*?)"(?=\s*,\s*"(?:referencedSymbols|sources|followUpQuestions)"|\s*})/i) ||
+      cleanedJson.match(/"answer"\s*:\s*"([\s\S]*?)"\s*}/i);
+
+    if (answerMatch && answerMatch[1]) {
+      const unescapedAnswer = answerMatch[1]
+        .replace(/\\n/g, "\n")
+        .replace(/\\"/g, '"')
+        .replace(/\\\\/g, "\\");
+
+      // Extract referencedSymbols if present
+      const symbolsMatch = cleanedJson.match(/"referencedSymbols"\s*:\s*\[([\s\S]*?)\]/i);
+      const extractedSymbols: string[] = [];
+      if (symbolsMatch && symbolsMatch[1]) {
+        const symbolTokens = symbolsMatch[1].match(/"([A-Z0-9_-]+)"/gi) || [];
+        for (const token of symbolTokens) {
+          extractedSymbols.push(token.replace(/"/g, "").toUpperCase());
+        }
+      }
+
+      // Extract followUpQuestions if present
+      const questionsMatch = cleanedJson.match(/"followUpQuestions"\s*:\s*\[([\s\S]*?)\]/i);
+      const extractedQuestions: string[] = [];
+      if (questionsMatch && questionsMatch[1]) {
+        const qTokens = questionsMatch[1].match(/"([^"]+)"/g) || [];
+        for (const q of qTokens) {
+          extractedQuestions.push(q.replace(/"/g, ""));
+        }
+      }
+
+      return {
+        answer: unescapedAnswer,
+        referencedSymbols: extractedSymbols,
+        sources: [],
+        followUpQuestions: extractedQuestions,
+      };
+    }
+  } catch {
+    // Continue
+  }
+
+  // 4. Graceful text fallback: strip markdown fences and JSON wrapper remnants
+  let fallbackAnswer = rawText.trim();
+  fallbackAnswer = fallbackAnswer
+    .replace(/^```(?:json|markdown)?\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
+
+  if (fallbackAnswer.startsWith("{") && fallbackAnswer.includes('"answer"')) {
+    fallbackAnswer = fallbackAnswer
+      .replace(/^{\s*"answer"\s*:\s*"/i, "")
+      .replace(/"\s*,?\s*"(?:referencedSymbols|sources|followUpQuestions)"[\s\S]*$/i, "")
+      .replace(/"\s*}\s*$/i, "")
+      .replace(/\\n/g, "\n")
+      .replace(/\\"/g, '"');
+  }
+
+  // Extract referenced symbols from text by matching tracked PreStocks assets
+  const foundSymbols: string[] = [];
+  for (const p of allProducts) {
+    const sym = p.symbol.toUpperCase();
+    const name = getCompanyName(p.name).toLowerCase();
+    if (
+      fallbackAnswer.toUpperCase().includes(`$${sym}`) ||
+      fallbackAnswer.toUpperCase().includes(` ${sym} `) ||
+      fallbackAnswer.toLowerCase().includes(name)
+    ) {
+      foundSymbols.push(sym);
+    }
+  }
+
+  return {
+    answer: fallbackAnswer,
+    referencedSymbols: foundSymbols,
+    sources: [],
+    followUpQuestions: [
+      "What are the latest funding rounds and marks for these companies?",
+      "How does the secondary token price compare to benchmark valuation?",
+      "Can you break down the implied market cap and supply metrics?",
+    ],
+  };
 }
 
 /**
@@ -199,7 +306,11 @@ Return strictly a valid JSON object matching this schema:
   ]
 }
 
-Ensure referencedSymbols contains ONLY valid uppercase symbols from the provided PreStocks assets that were genuinely discussed.`;
+CRITICAL JSON FORMATTING RULES:
+- Return strictly a valid RFC 8259 JSON object.
+- Properly escape all double quotes (\") and backslashes (\\) inside the "answer" markdown text.
+- Do not output literal unescaped newlines inside string values; use \\n.
+- Ensure referencedSymbols contains ONLY valid uppercase symbols from the provided PreStocks assets that were genuinely discussed.`;
 
   // Format conversation history for context
   let conversationText = "";
@@ -219,13 +330,14 @@ ${conversationText}
 USER QUERY:
 ${userQuery}
 
-Return strictly the valid JSON object. Do not wrap in conversational preamble.`;
+Return strictly a valid JSON object. Escape all double quotes (\") inside the markdown answer. Do not wrap in markdown or conversational preamble.`;
 
   const requestBody = {
     contents: [{ parts: [{ text: fullPrompt }] }],
     tools: [{ googleSearch: {} }],
     generationConfig: {
       temperature: 0.3,
+      maxOutputTokens: 4096,
     },
   };
 
@@ -238,24 +350,21 @@ Return strictly the valid JSON object. Do not wrap in conversational preamble.`;
   if (!response.ok) {
     const errorText = await response.text();
     console.error("Intelligence API Error:", response.status, errorText);
+    if (response.status === 429) {
+      throw new Error("Research service is currently at capacity. Please wait a few seconds and try again.");
+    }
     throw new Error(`Intelligence service returned status ${response.status}`);
   }
 
   const json = await response.json();
-  const rawText = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const parts = json?.candidates?.[0]?.content?.parts || [];
+  const rawText = parts.map((p: { text?: string }) => p.text || "").join("");
 
   if (!rawText) {
     throw new Error("Empty response returned from research service");
   }
 
-  let parsed: Partial<IntelligenceResponse>;
-  try {
-    const cleanedJson = extractJson(rawText);
-    parsed = JSON.parse(cleanedJson);
-  } catch (err) {
-    console.error("Failed to parse intelligence JSON output:", rawText, err);
-    throw new Error("Unable to parse research intelligence output");
-  }
+  const parsed = parseIntelligenceResponse(rawText, allProducts);
 
   // Extract grounding search metadata / web sources if returned by Gemini
   const groundingChunks =

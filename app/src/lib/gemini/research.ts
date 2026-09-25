@@ -32,13 +32,12 @@ export function setCachedScoutReport(symbol: string, report: ScoutReport): void 
 }
 
 function extractJson(text: string): string {
-  const cleaned = text.trim();
-  // Strip markdown code fences if wrapped or embedded
-  const embeddedMatch = cleaned.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-  if (embeddedMatch) {
-    return embeddedMatch[1].trim();
+  let cleaned = text.trim();
+  if (cleaned.startsWith("```")) {
+    cleaned = cleaned.replace(/^```(?:json)?\s*\r?\n?/i, "");
+    cleaned = cleaned.replace(/\r?\n?```\s*$/i, "");
+    cleaned = cleaned.trim();
   }
-  // Fall back to finding the outermost JSON object braces
   const firstBrace = cleaned.indexOf("{");
   const lastBrace = cleaned.lastIndexOf("}");
   if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
@@ -127,6 +126,7 @@ Provide 3 to 5 recent developments if verified sources exist. Always include acc
     tools: [{ googleSearch: {} }],
     generationConfig: {
       temperature: 0.2,
+      maxOutputTokens: 4096,
     },
   };
 
@@ -141,11 +141,15 @@ Provide 3 to 5 recent developments if verified sources exist. Always include acc
   if (!response.ok) {
     const errorText = await response.text();
     console.error("Research API Error:", response.status, errorText);
+    if (response.status === 429) {
+      throw new Error("Research service is currently at capacity. Please wait a few seconds and try again.");
+    }
     throw new Error(`Research service returned status ${response.status}`);
   }
 
   const json = await response.json();
-  const rawText = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const parts = json?.candidates?.[0]?.content?.parts || [];
+  const rawText = parts.map((p: { text?: string }) => p.text || "").join("");
 
   if (!rawText) {
     throw new Error("Empty or malformed response returned from research service");
@@ -155,9 +159,21 @@ Provide 3 to 5 recent developments if verified sources exist. Always include acc
   try {
     const jsonString = extractJson(rawText);
     parsed = JSON.parse(jsonString);
-  } catch (err) {
-    console.error("Failed to parse research JSON output:", rawText, err);
-    throw new Error("Research service returned invalid structured data");
+  } catch {
+    try {
+      const sanitized = extractJson(rawText).replace(/(?<=:\s*"[\s\S]*?)\r?\n(?=[\s\S]*?")/g, "\\n");
+      parsed = JSON.parse(sanitized);
+    } catch {
+      const overviewMatch = rawText.match(/"overview"\s*:\s*"([\s\S]*?)"\s*,\s*"/i);
+      parsed = {
+        symbol: product.symbol.toUpperCase(),
+        companyName: companyName,
+        overview: overviewMatch ? overviewMatch[1].replace(/\\n/g, "\n").replace(/\\"/g, '"') : rawText.slice(0, 500),
+        notableFacts: [],
+        recentDevelopments: [],
+        sources: [],
+      };
+    }
   }
 
   // Extract grounding search metadata / web sources if returned by Gemini
