@@ -13,15 +13,9 @@ export default function Footer() {
             <span className="font-headline font-bold text-sm tracking-wider text-on-surface">
               SCOUTER
             </span>
-            <span className="text-[10px] font-label px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant border border-outline-variant/30">
-              Terminal v1.0
-            </span>
           </div>
           <p className="text-on-surface-variant text-xs leading-relaxed mb-4">
             Research and discovery terminal for PreStocks tokenised pre-IPO assets. Discover valuation metrics, compare token pricing vs mark benchmarks, and monitor private company assets.
-          </p>
-          <p className="text-[11px] text-on-surface-variant/60 leading-normal">
-            PreStocks tokens provide economic exposure backed 1:1 by SPVs and are tradable on Solana. They do not represent direct shareholder equity. Scouter is a research tool and does not provide financial or investment advice.
           </p>
         </div>
 
