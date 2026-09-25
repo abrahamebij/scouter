@@ -6,6 +6,9 @@
 - **Developer Documentation**: [https://scouter-tool.vercel.app/docs](https://scouter-tool.vercel.app/docs)
 - **Interactive API Explorer**: [https://scouter-tool.vercel.app/docs/explorer](https://scouter-tool.vercel.app/docs/explorer)
 - **npm Package**: [`scouter-sdk`](https://www.npmjs.com/package/scouter-sdk) (`npm install scouter-sdk`)
+  
+
+![Cover image](https://i.ibb.co/C5YRdfx5/Add-wordmark-to-logo-20260925195706.jpg)
 
 Built for the **Stocklana Hackathon**, specifically targeting the **PreStocks Bounty Track**.
 
