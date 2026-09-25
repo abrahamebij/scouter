@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { PreStockDerived } from "@/lib/prestocks/types";
 import { getCompanyName } from "@/lib/prestocks/transforms";
 import { ScoutReport } from "@/lib/gemini/schemas";
@@ -23,10 +23,123 @@ function formatTimeAgo(timestamp: number): string {
   return `${diffDays}d ago`;
 }
 
+const TERMINAL_STEPS = [
+  "Initializing Scouter private market intelligence engine...",
+  "Querying Google Search Grounding for current public disclosures...",
+  "Cross-referencing PreStocks secondary market valuation...",
+  "Synthesizing corporate overview and business model...",
+  "Extracting catalyst timeline and verified sources...",
+  "Finalizing structured intelligence brief...",
+];
+
+function TerminalLoader({ symbol }: { symbol: string }) {
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentStepIndex((prev) => (prev < TERMINAL_STEPS.length - 1 ? prev + 1 : prev));
+    }, 850);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="rounded-2xl bg-surface-container-low border border-outline-variant/25 p-6 md:p-8 space-y-5 shadow-sm">
+      <div className="flex items-center justify-between pb-3 border-b border-outline-variant/15">
+        <div className="flex items-center gap-2.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-accent animate-ping" />
+          <span className="font-mono text-xs font-semibold text-on-surface uppercase tracking-wider">
+            Scout Agent &bull; Live Grounding
+          </span>
+        </div>
+        <span className="font-mono text-xs text-accent bg-accent/8 border border-accent/20 px-2 py-0.5 rounded">
+          ${symbol}
+        </span>
+      </div>
+
+      <div className="space-y-2.5 font-mono text-xs text-on-surface-variant min-h-[140px]">
+        {TERMINAL_STEPS.slice(0, currentStepIndex + 1).map((step, idx) => {
+          const isLatest = idx === currentStepIndex;
+          return (
+            <div key={idx} className="flex items-start gap-2.5 leading-relaxed">
+              <span className="text-accent/80 select-none">&gt;</span>
+              <span className={isLatest ? "text-on-surface font-medium" : "text-on-surface-variant/70"}>
+                {step}
+              </span>
+              {isLatest && (
+                <span className="inline-block w-1.5 h-3.5 bg-accent animate-pulse ml-0.5" />
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* <div className="pt-2 border-t border-outline-variant/10 flex items-center justify-between text-[11px] text-on-surface-variant/60 font-mono">
+        <span>Model: Gemini 2.5 Flash</span>
+        <span>Google Search Grounding: Active</span>
+      </div> */}
+    </div>
+  );
+}
+
+interface StreamingWordProps {
+  text: string;
+  speedMs?: number;
+  onComplete?: () => void;
+  showCursor?: boolean;
+}
+
+function StreamingWord({
+  text,
+  speedMs = 36,
+  onComplete,
+  showCursor = true,
+}: StreamingWordProps) {
+  const words = useMemo(() => text.split(" "), [text]);
+  const [wordCount, setWordCount] = useState(0);
+
+  useEffect(() => {
+    setWordCount(0);
+    if (!text || words.length === 0) {
+      onComplete?.();
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setWordCount((prev) => {
+        const next = prev + 1;
+        if (next >= words.length) {
+          clearInterval(interval);
+          onComplete?.();
+          return words.length;
+        }
+        return next;
+      });
+    }, speedMs);
+
+    return () => clearInterval(interval);
+  }, [text, words, speedMs, onComplete]);
+
+  const isDone = wordCount >= words.length;
+  const visible = words.slice(0, wordCount).join(" ");
+
+  return (
+    <span>
+      {visible}
+      {showCursor && !isDone && (
+        <span className="inline-block w-1.5 h-3.5 ml-1 bg-accent align-middle animate-pulse" />
+      )}
+    </span>
+  );
+}
+
+type AnimationPhase = "idle" | "overview" | "businessModel" | "facts" | "timeline" | "complete";
+
 export default function ScoutReportCard({ product }: ScoutReportCardProps) {
   const [report, setReport] = useState<ScoutReport | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [animationPhase, setAnimationPhase] = useState<AnimationPhase>("idle");
+  const [activeFactIndex, setActiveFactIndex] = useState(0);
   const { toast } = useToast();
   const companyName = getCompanyName(product.name);
 
@@ -40,6 +153,7 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
           const json = await res.json();
           if (json.report && isMounted) {
             setReport(json.report);
+            setAnimationPhase("complete");
           }
         }
       } catch {
@@ -56,6 +170,7 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
     async (forceRefresh = false) => {
       setLoading(true);
       setError(null);
+      setActiveFactIndex(0);
       try {
         const res = await fetch("/api/scout", {
           method: "POST",
@@ -70,6 +185,7 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
 
         const data = await res.json();
         setReport(data.report);
+        setAnimationPhase("overview");
         if (forceRefresh) {
           toast("Scout research report refreshed", "success");
         }
@@ -83,6 +199,10 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
     },
     [product.symbol, toast]
   );
+
+  const handleSkipAnimation = useCallback(() => {
+    setAnimationPhase("complete");
+  }, []);
 
   // Uninitialized state: prominent "Scout this company" CTA
   if (!report && !loading && !error) {
@@ -114,36 +234,9 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
     );
   }
 
-  // Loading state
+  // Loading state (Terminal-style stream instead of skeleton)
   if (loading) {
-    return (
-      <div className="p-8 rounded-2xl bg-surface-container-low border border-outline-variant/20 space-y-6 animate-pulse">
-        <div className="flex items-center justify-between pb-4 border-b border-outline-variant/15">
-          <div className="space-y-2">
-            <div className="h-5 bg-surface-container-high rounded w-48" />
-            <div className="h-3 bg-surface-container-high/60 rounded w-64" />
-          </div>
-          <div className="h-8 bg-surface-container-high rounded-lg w-28" />
-        </div>
-
-        <div className="space-y-2.5">
-          <div className="h-4 bg-surface-container-high/80 rounded w-full" />
-          <div className="h-4 bg-surface-container-high/80 rounded w-5/6" />
-          <div className="h-4 bg-surface-container-high/60 rounded w-4/6" />
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-16 bg-surface-container-lowest rounded-xl border border-outline-variant/10" />
-          ))}
-        </div>
-
-        <div className="flex items-center justify-center gap-2 pt-4 text-xs font-mono text-on-surface-variant">
-          <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-          <span>Grounding live web intelligence with Google Gemini...</span>
-        </div>
-      </div>
-    );
+    return <TerminalLoader symbol={product.symbol} />;
   }
 
   // Error state
@@ -158,7 +251,7 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
             Research Brief Temporarily Unavailable
           </h3>
           <p className="text-xs text-on-surface-variant max-w-sm mx-auto font-light">
-            Scouter could not complete the Gemini intelligence query. Live PreStocks secondary market pricing remains active.
+            Scouter could not complete the intelligence query. Live PreStocks secondary market pricing remains active.
           </p>
         </div>
         <div className="text-[11px] font-mono text-on-surface-variant/70 p-2 rounded bg-surface-container-lowest border border-outline-variant/20 max-w-sm mx-auto break-all">
@@ -177,8 +270,13 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
 
   if (!report) return null;
 
+  const isAnimating = animationPhase !== "idle" && animationPhase !== "complete";
+  const isBusinessModelVisible = animationPhase === "businessModel" || animationPhase === "facts" || animationPhase === "timeline" || animationPhase === "complete";
+  const isFactsVisible = animationPhase === "facts" || animationPhase === "timeline" || animationPhase === "complete";
+  const isTimelineVisible = animationPhase === "timeline" || animationPhase === "complete";
+
   return (
-    <div className="rounded-2xl bg-surface-container-low border border-outline-variant/20 p-6 md:p-8 space-y-8 shadow-sm">
+    <div className="rounded-2xl bg-surface-container-low border border-outline-variant/20 p-6 md:p-8 space-y-8 shadow-sm transition-all duration-300">
       {/* Header bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-outline-variant/15">
         <div>
@@ -189,19 +287,29 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
             <h3 className="font-headline font-bold text-lg text-on-surface">
               Scout Intelligence Brief
             </h3>
-            <span className="text-[10px] font-label uppercase tracking-widest text-accent bg-accent/8 border border-accent/20 px-2 py-0.5 rounded">
-              Grounded
-            </span>
+           
           </div>
           <p className="text-xs text-on-surface-variant mt-1 font-light">
-            Synthesized via Gemini with verified Google Search Grounding.
+            Synthesized with verified Google Search Grounding.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
+          {isAnimating && (
+            <button
+              onClick={handleSkipAnimation}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/25 text-[11px] font-mono text-on-surface-variant hover:text-on-surface transition-colors"
+              title="Fast-forward typing animation"
+            >
+              <MaterialIcon icon="fast_forward" size="sm" />
+              <span>Skip</span>
+            </button>
+          )}
+
           <span className="text-[11px] font-mono text-on-surface-variant/70">
             {formatTimeAgo(report.generatedAt)}
           </span>
+
           <button
             onClick={() => handleScout(true)}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/30 text-xs font-headline font-medium text-on-surface transition-colors"
@@ -213,7 +321,7 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
         </div>
       </div>
 
-      {/* Structured Meta Pills (Sector, Year, HQ, Business Model) */}
+      {/* Structured Meta Pills (Sector, Year, HQ, Valuation) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
         {report.sector && (
           <div className="p-3.5 rounded-xl bg-surface-container-lowest border border-outline-variant/15">
@@ -258,62 +366,120 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
         </div>
       </div>
 
-      {/* Overview & Business Model */}
+      {/* Overview & Business Model (Typewriter Streaming) */}
       <div className="space-y-4">
         <div className="space-y-1.5">
           <h4 className="font-label uppercase tracking-wider text-[11px] text-on-surface-variant font-semibold">
             Company Overview
           </h4>
           <p className="text-sm text-on-surface leading-relaxed font-light">
-            {report.overview}
+            {animationPhase === "overview" ? (
+              <StreamingWord
+                text={report.overview}
+                speedMs={36}
+                onComplete={() => {
+                  setAnimationPhase(report.businessModel ? "businessModel" : "facts");
+                }}
+              />
+            ) : (
+              report.overview
+            )}
           </p>
         </div>
 
-        {report.businessModel && (
+        {report.businessModel && isBusinessModelVisible && (
           <div className="space-y-1.5 pt-2">
             <h4 className="font-label uppercase tracking-wider text-[11px] text-on-surface-variant font-semibold">
               Business Model
             </h4>
             <p className="text-sm text-on-surface leading-relaxed font-light">
-              {report.businessModel}
+              {animationPhase === "businessModel" ? (
+                <StreamingWord
+                  text={report.businessModel}
+                  speedMs={36}
+                  onComplete={() => {
+                    setAnimationPhase("facts");
+                  }}
+                />
+              ) : (
+                report.businessModel
+              )}
             </p>
           </div>
         )}
       </div>
 
-      {/* Notable Facts */}
-      {report.notableFacts && report.notableFacts.length > 0 && (
+      {/* Notable Facts (Sequential Streaming) */}
+      {report.notableFacts && report.notableFacts.length > 0 && isFactsVisible && (
         <div className="space-y-2.5 pt-2 border-t border-outline-variant/10">
           <h4 className="font-label uppercase tracking-wider text-[11px] text-on-surface-variant font-semibold">
             Key Corporate Fundamentals
           </h4>
           <ul className="space-y-2 text-xs text-on-surface">
-            {report.notableFacts.map((fact, i) => (
-              <li key={i} className="flex items-start gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent/80 mt-1.5 flex-shrink-0" />
-                <span className="leading-relaxed font-light">{fact}</span>
-              </li>
-            ))}
+            {report.notableFacts.map((fact, i) => {
+              if (animationPhase === "complete" || animationPhase === "timeline") {
+                return (
+                  <li key={i} className="flex items-start gap-2.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent/80 mt-1.5 flex-shrink-0" />
+                    <span className="leading-relaxed font-light">{fact}</span>
+                  </li>
+                );
+              }
+
+              if (i < activeFactIndex) {
+                return (
+                  <li key={i} className="flex items-start gap-2.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent/80 mt-1.5 flex-shrink-0" />
+                    <span className="leading-relaxed font-light">{fact}</span>
+                  </li>
+                );
+              }
+
+              if (i === activeFactIndex) {
+                return (
+                  <li key={i} className="flex items-start gap-2.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent/80 mt-1.5 flex-shrink-0" />
+                    <span className="leading-relaxed font-light">
+                      <StreamingWord
+                        text={fact}
+                        speedMs={32}
+                        onComplete={() => {
+                          if (activeFactIndex + 1 < report.notableFacts.length) {
+                            setActiveFactIndex((prev) => prev + 1);
+                          } else {
+                            setAnimationPhase("timeline");
+                          }
+                        }}
+                      />
+                    </span>
+                  </li>
+                );
+              }
+
+              return null;
+            })}
           </ul>
         </div>
       )}
 
-      {/* Recent Activity Timeline (Phases 30-32) */}
-      <div className="space-y-4 pt-4 border-t border-outline-variant/10">
-        <div className="flex items-center justify-between">
-          <h4 className="font-label uppercase tracking-wider text-[11px] text-on-surface-variant font-semibold">
-            Recent Activity &amp; Catalyst Timeline
-          </h4>
-          <span className="text-[11px] font-mono text-on-surface-variant/70">
-            Verified Public Announcements
-          </span>
+      {/* Recent Activity Timeline (Revealed after facts) */}
+      {isTimelineVisible && (
+        <div className="space-y-4 pt-4 border-t border-outline-variant/10 animate-fade-in">
+          <div className="flex items-center justify-between">
+            <h4 className="font-label uppercase tracking-wider text-[11px] text-on-surface-variant font-semibold">
+              Recent Activity &amp; Catalyst Timeline
+            </h4>
+            <span className="text-[11px] font-mono text-on-surface-variant/70">
+              Verified Public Announcements
+            </span>
+          </div>
+          <ActivityTimeline events={report.recentDevelopments} />
         </div>
-        <ActivityTimeline events={report.recentDevelopments} />
-      </div>
+      )}
 
-      {/* Grounded Citation Sources (Phase 25) */}
-      {report.sources && report.sources.length > 0 && (
-        <div className="space-y-3 pt-4 border-t border-outline-variant/10">
+      {/* Grounded Citation Sources */}
+      {report.sources && report.sources.length > 0 && isTimelineVisible && (
+        <div className="space-y-3 pt-4 border-t border-outline-variant/10 animate-fade-in">
           <h4 className="font-label uppercase tracking-wider text-[11px] text-on-surface-variant font-semibold">
             Grounding Citations &amp; Sources
           </h4>
@@ -339,3 +505,4 @@ export default function ScoutReportCard({ product }: ScoutReportCardProps) {
     </div>
   );
 }
+
