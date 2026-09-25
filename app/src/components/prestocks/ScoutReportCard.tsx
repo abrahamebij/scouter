@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { PreStockDerived } from "@/lib/prestocks/types";
 import { getCompanyName } from "@/lib/prestocks/transforms";
 import { ScoutReport } from "@/lib/gemini/schemas";

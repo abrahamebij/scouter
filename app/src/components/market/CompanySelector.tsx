@@ -40,8 +40,6 @@ export default function CompanySelector({ currentSymbol, products }: CompanySele
   useEffect(() => {
     if (isOpen) {
       searchInputRef.current?.focus();
-    } else {
-      setSearchQuery("");
     }
   }, [isOpen]);
 
@@ -50,12 +48,14 @@ export default function CompanySelector({ currentSymbol, products }: CompanySele
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsOpen(false);
+        setSearchQuery("");
       }
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setIsOpen(false);
+        setSearchQuery("");
       }
     };
 
@@ -72,8 +72,10 @@ export default function CompanySelector({ currentSymbol, products }: CompanySele
 
   const handleSelect = (symbol: string) => {
     setIsOpen(false);
+    setSearchQuery("");
     router.push(`/market/${symbol.toLowerCase()}`);
   };
+
 
   const currentName = currentProduct ? getCompanyName(currentProduct.name) : currentSymbol.toUpperCase();
 

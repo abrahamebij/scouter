@@ -20,23 +20,26 @@ export default function TypewriterMarkdown({
 }: TypewriterMarkdownProps) {
   const [displayedLength, setDisplayedLength] = useState(isStreaming ? 0 : content.length);
   const onCompleteRef = useRef(onComplete);
-  onCompleteRef.current = onComplete;
   const onTickRef = useRef(onTick);
-  onTickRef.current = onTick;
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+    onTickRef.current = onTick;
+  });
 
   useEffect(() => {
     if (!isStreaming) {
-      setDisplayedLength(content.length);
       return;
     }
 
     if (!content) {
-      setDisplayedLength(0);
       onCompleteRef.current?.();
       return;
     }
 
-    setDisplayedLength(0);
+    queueMicrotask(() => {
+      setDisplayedLength(0);
+    });
 
     const charsPerTick =
       content.length > 1000 ? 5 : content.length > 500 ? 3 : content.length > 200 ? 2 : 1;

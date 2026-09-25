@@ -27,7 +27,11 @@ export default function MarketChart({ product }: MarketChartProps) {
   // Fetch real on-chain candles and secondary trading history from the API
   useEffect(() => {
     let isCurrent = true;
-    setIsLoadingFeed(true);
+    queueMicrotask(() => {
+      if (isCurrent) {
+        setIsLoadingFeed(true);
+      }
+    });
 
     fetch(`/api/markets/${product.symbol.toLowerCase()}/history?timeframe=${activeTimeframe}`)
       .then((res) => res.json())
@@ -55,11 +59,13 @@ export default function MarketChart({ product }: MarketChartProps) {
     toast("Recorded new snapshot observation for chart", "success");
   };
 
+  const [liveTimestamp] = useState(() => Date.now());
+
   // Combine external on-chain history with any local observations and the live tick
   const combinedHistory = useMemo(() => {
     const livePoint: CompanySnapshot = {
       symbol: product.symbol.toLowerCase(),
-      timestamp: Date.now(),
+      timestamp: liveTimestamp,
       tokenPrice: product.tokenPrice,
       markPrice: product.markPrice,
       impliedValuation: product.impliedValuation,
@@ -79,7 +85,8 @@ export default function MarketChart({ product }: MarketChartProps) {
       return base;
     }
     return [...base, livePoint];
-  }, [externalHistory, history, product]);
+  }, [externalHistory, history, product, liveTimestamp]);
+
 
   const filteredPoints = useMemo(() => {
     return combinedHistory;

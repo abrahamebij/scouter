@@ -21,18 +21,25 @@ export default function TypewriterText({
 }: TypewriterTextProps) {
   const [displayedLength, setDisplayedLength] = useState(0);
   const onCompleteRef = useRef(onComplete);
-  onCompleteRef.current = onComplete;
   const onTickRef = useRef(onTick);
-  onTickRef.current = onTick;
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+    onTickRef.current = onTick;
+  });
 
   useEffect(() => {
     if (!text) {
-      setDisplayedLength(0);
+      queueMicrotask(() => {
+        setDisplayedLength(0);
+      });
       onCompleteRef.current?.();
       return;
     }
 
-    setDisplayedLength(0);
+    queueMicrotask(() => {
+      setDisplayedLength(0);
+    });
 
     // Dynamic chars per tick based on text length to keep animation engaging and timely
     const charsPerTick =

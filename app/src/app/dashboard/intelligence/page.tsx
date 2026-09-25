@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { fetchPreStocks } from "@/lib/prestocks/api";
+import { PreStockDerived } from "@/lib/prestocks/types";
 import IntelligenceChat from "@/components/intelligence/IntelligenceChat";
 
 export const metadata: Metadata = {
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function DashboardIntelligencePage() {
-  let products = [];
+  let products: PreStockDerived[] = [];
   try {
     products = await fetchPreStocks();
   } catch (err) {

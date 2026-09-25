@@ -53,6 +53,7 @@ function RenderImage({ src, alt = "Attached image", caption }: RenderImageProps)
             </span>
           </div>
         )}
+        {/* eslint-disable-next-line @next/next/no-img-element -- Dynamic external image from markdown content */}
         <img
           src={src}
           alt={alt}

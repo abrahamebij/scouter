@@ -17,7 +17,11 @@ export function useFirebaseAuth() {
       if (syncedAddressRef.current === walletAddress) return;
 
       let isCurrent = true;
-      setIsSyncing(true);
+      queueMicrotask(() => {
+        if (isCurrent) {
+          setIsSyncing(true);
+        }
+      });
 
       fetch("/api/user/sync", {
         method: "POST",
@@ -47,7 +51,9 @@ export function useFirebaseAuth() {
         isCurrent = false;
       };
     } else {
-      setProfile(null);
+      queueMicrotask(() => {
+        setProfile(null);
+      });
       syncedAddressRef.current = null;
     }
   }, [isConnected, walletAddress]);
