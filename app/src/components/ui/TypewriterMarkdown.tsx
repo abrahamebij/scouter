@@ -42,6 +42,7 @@ export default function TypewriterMarkdown({
       content.length > 1000 ? 5 : content.length > 500 ? 3 : content.length > 200 ? 2 : 1;
 
     let current = 0;
+    let lastTickTime = 0;
     const interval = setInterval(() => {
       current += charsPerTick;
       if (current >= content.length) {
@@ -52,7 +53,12 @@ export default function TypewriterMarkdown({
       } else {
         setDisplayedLength(current);
       }
-      onTickRef.current?.();
+
+      const now = Date.now();
+      if (now - lastTickTime > 160) {
+        lastTickTime = now;
+        onTickRef.current?.();
+      }
     }, speedMs);
 
     return () => clearInterval(interval);

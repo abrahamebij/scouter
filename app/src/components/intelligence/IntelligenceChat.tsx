@@ -67,18 +67,50 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isUserScrolledUpRef = useRef(false);
 
-  const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // Monitor user scroll position to avoid fighting manual scroll-up
+  useEffect(() => {
+    const handleScroll = () => {
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const distanceFromBottom = documentHeight - (scrollTop + windowHeight);
+
+      // If user has scrolled up more than 160px from the bottom, respect their position
+      if (distanceFromBottom > 160) {
+        isUserScrolledUpRef.current = true;
+      } else {
+        isUserScrolledUpRef.current = false;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Streaming typewriter tick scroll: instant follow ONLY if user has not scrolled up
+  const handleStreamingTick = useCallback(() => {
+    if (isUserScrolledUpRef.current) return;
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto", block: "end" });
+  }, []);
+
+  // When message count or loading changes, align only if user is at bottom
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, loading, scrollToBottom]);
+    if (!isUserScrolledUpRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "auto", block: "end" });
+    }
+  }, [messages.length, loading]);
 
   const handleSubmit = async (queryText?: string) => {
     const textToSend = queryText || input;
     if (!textToSend.trim() || loading) return;
+
+    // Reset user scroll lock and smoothly scroll once down to user prompt
+    isUserScrolledUpRef.current = false;
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }, 50);
 
     const userMessage: Message = {
       id: `user-${Date.now()}`,
@@ -277,7 +309,7 @@ export default function IntelligenceChat({ initialProducts }: IntelligenceChatPr
                       content={message.content}
                       isStreaming={message.id === streamingMessageId}
                       speedMs={15}
-                      onTick={scrollToBottom}
+                      onTick={handleStreamingTick}
                       onComplete={() => setStreamingMessageId(null)}
                     />
 
