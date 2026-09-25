@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { getPreStocksSafe } from "@/lib/prestocks/api";
 import { formatCompactValuation, formatPercentage } from "@/lib/prestocks/format";
 import ProductGrid from "@/components/prestocks/ProductGrid";
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import HeroSection from "@/components/home/HeroSection";
 
 export const revalidate = 60;
 
@@ -21,49 +21,13 @@ export default async function HomePage() {
       : 0;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
-      {/* Terminal Hero Section */}
-      <section className="text-center sm:text-left pt-6 pb-2 border-b border-outline-variant/15 flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="max-w-3xl space-y-4">
-          <div className="flex items-center gap-2 text-xs">
-            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            <span className="font-label uppercase tracking-widest text-[11px] text-on-surface-variant font-medium">
-              PreStocks Solana Terminal
-            </span>
-          </div>
+    <div className="-mt-16 pb-16 space-y-12 sm:space-y-16 w-full overflow-x-hidden">
+      {/* Full Screen-Filling Hero Section */}
+      <HeroSection />
 
-          <h1 className="text-3xl sm:text-5xl font-headline font-extrabold tracking-tight text-on-surface leading-tight">
-            Discover &amp; Research <br />
-            <span className="text-primary">
-              Tokenised Pre-IPO Assets
-            </span>
-          </h1>
-
-          <p className="text-sm sm:text-base text-on-surface-variant max-w-2xl font-light leading-relaxed">
-            Scouter tracks secondary market token prices, implied valuations, and reference mark prices for private companies available through PreStocks on Solana.
-          </p>
-        </div>
-
-        {/* Quick action buttons */}
-        <div className="flex flex-wrap items-center gap-3">
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-headline font-semibold text-sm hover:brightness-95 shadow-sm transition-all"
-          >
-            <span>Open Dashboard</span>
-            <MaterialIcon icon="space_dashboard" size="sm" />
-          </Link>
-          <Link
-            href="/docs"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface-container-high border border-outline-variant/30 text-on-surface font-headline font-semibold text-sm hover:bg-surface-container-highest transition-all"
-          >
-            <span>Developer Docs</span>
-            <MaterialIcon icon="menu_book" size="sm" />
-          </Link>
-        </div>
-      </section>
-
-      {/* Live Market Snapshot Stats */}
+      {/* Main Content Constrained to max-w-7xl */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        {/* Live Market Snapshot Stats */}
       {products.length > 0 && (
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="p-4 sm:p-5 rounded-2xl bg-surface-container-low/70 border border-outline-variant/20">
@@ -117,7 +81,7 @@ export default async function HomePage() {
       )}
 
       {/* Main Assets Section */}
-      <section className="space-y-6">
+      <section id="catalog" className="space-y-6 scroll-mt-24">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h2 className="text-xl font-headline font-bold text-on-surface">
@@ -148,6 +112,7 @@ export default async function HomePage() {
           <ProductGrid products={products} />
         )}
       </section>
+      </div>
     </div>
   );
 }

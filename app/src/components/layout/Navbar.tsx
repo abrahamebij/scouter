@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import MaterialIcon from "@/components/ui/MaterialIcon";
@@ -14,10 +14,27 @@ const navLinks = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const isHome = pathname === "/";
+  const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  useEffect(() => {
+    if (!isHome) return;
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 280);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isHome]);
+
   return (
-    <nav className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/20">
+    <nav
+      className={`fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-md border-b border-outline-variant/20 transition-all duration-300 ${
+        isHome && !scrolled
+          ? "opacity-0 pointer-events-none -translate-y-full"
+          : "opacity-100 pointer-events-auto translate-y-0"
+      }`}
+    >
       <div className="flex justify-between items-center h-16 px-4 md:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         {/* Brand */}
         <div className="flex items-center gap-8">
