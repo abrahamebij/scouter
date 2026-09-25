@@ -8,11 +8,8 @@ import SolanaConnectButton from "./SolanaConnectButton";
 import Img from "../ui/Img";
 
 const navLinks = [
-  { href: "/discover", label: "Discover", icon: "explore" },
-  { href: "/market", label: "Markets", icon: "show_chart" },
-  { href: "/compare", label: "Compare", icon: "compare_arrows" },
-  { href: "/watchlist", label: "Watchlist", icon: "bookmark" },
-  { href: "/intelligence", label: "Intelligence", icon: "psychology" },
+  { href: "/dashboard", label: "Dashboard", icon: "space_dashboard" },
+  { href: "/docs", label: "Docs", icon: "menu_book" },
 ];
 
 export default function Navbar() {

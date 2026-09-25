@@ -47,18 +47,18 @@ export default async function HomePage() {
         {/* Quick action buttons */}
         <div className="flex flex-wrap items-center gap-3">
           <Link
-            href="/discover"
+            href="/dashboard"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-headline font-semibold text-sm hover:brightness-95 shadow-sm transition-all"
           >
-            <span>Open Discover</span>
-            <MaterialIcon icon="explore" size="sm" />
+            <span>Open Dashboard</span>
+            <MaterialIcon icon="space_dashboard" size="sm" />
           </Link>
           <Link
-            href="/compare"
+            href="/docs"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface-container-high border border-outline-variant/30 text-on-surface font-headline font-semibold text-sm hover:bg-surface-container-highest transition-all"
           >
-            <span>Compare</span>
-            <MaterialIcon icon="compare_arrows" size="sm" />
+            <span>Developer Docs</span>
+            <MaterialIcon icon="menu_book" size="sm" />
           </Link>
         </div>
       </section>

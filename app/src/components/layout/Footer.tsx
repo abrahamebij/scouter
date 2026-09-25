@@ -1,5 +1,6 @@
 import Link from "next/link";
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import Img from "../ui/Img";
 
 export default function Footer() {
   return (
@@ -7,9 +8,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-8">
         <div className="max-w-md">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-6 h-6 rounded-md bg-surface-container-high border border-outline-variant/40 flex items-center justify-center text-on-surface-variant">
-              <span className="material-symbols-outlined text-sm">radar</span>
-            </div>
+         <Img src="/logo.png" alt="SCOUTER Logo" className="size-6" />
             <span className="font-headline font-bold text-sm tracking-wider text-on-surface">
               SCOUTER
             </span>
@@ -22,17 +21,20 @@ export default function Footer() {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 text-xs">
           <div>
             <h4 className="font-label font-bold text-on-surface uppercase tracking-wider mb-3 text-[11px]">
-              Terminal
+              Platform
             </h4>
             <div className="flex flex-col gap-2 text-on-surface-variant">
-              <Link href="/discover" className="hover:text-on-surface transition-colors">
-                Discover Assets
+              <Link href="/dashboard" className="hover:text-on-surface transition-colors">
+                Dashboard
               </Link>
-              <Link href="/compare" className="hover:text-on-surface transition-colors">
-                Compare Companies
+              <Link href="/dashboard/market" className="hover:text-on-surface transition-colors">
+                Market Terminal
               </Link>
-              <Link href="/watchlist" className="hover:text-on-surface transition-colors">
-                Saved Watchlist
+              <Link href="/docs" className="hover:text-on-surface transition-colors">
+                Developer Docs
+              </Link>
+              <Link href="/docs/api" className="hover:text-on-surface transition-colors">
+                REST API
               </Link>
             </div>
           </div>
