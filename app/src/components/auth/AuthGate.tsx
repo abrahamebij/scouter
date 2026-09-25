@@ -62,14 +62,6 @@ export default function AuthGate({ children }: AuthGateProps) {
                 priority
               />
             </div>
-            <div>
-              <span className="font-headline font-bold text-sm tracking-widest text-on-surface uppercase block">
-                SCOUTER
-              </span>
-              <span className="text-[11px] font-mono text-accent">
-                Private Market Intelligence Terminal
-              </span>
-            </div>
           </div>
 
           {/* Heading & Explanation */}
