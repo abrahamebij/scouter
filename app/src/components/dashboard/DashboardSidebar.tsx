@@ -55,7 +55,7 @@ export default function DashboardSidebar() {
   const addressStr = account ? (typeof account === "string" ? account : String(account)) : "";
 
   return (
-    <aside className="w-64 flex-shrink-0 border-r border-outline-variant/20 bg-surface-container-low/70 min-h-[calc(100vh-4rem)] flex flex-col justify-between p-4">
+    <aside className="fixed top-16 left-0 bottom-0 w-64 border-r border-outline-variant/20 bg-surface-container-low/95 backdrop-blur-md flex flex-col justify-between p-4 overflow-y-auto z-30">
       {/* Navigation Sections */}
       <div className="space-y-6">
         {DASHBOARD_SECTIONS.map((section) => (

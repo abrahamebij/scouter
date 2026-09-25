@@ -1,14 +1,26 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import Img from "../ui/Img";
+import { cn } from "@/lib/utils";
 
 export default function Footer() {
+  const pathname = usePathname();
+  const hasFixedSidebar = pathname.startsWith("/dashboard") || pathname.startsWith("/docs");
+
   return (
-    <footer className="bg-surface-container-lowest border-t border-outline-variant/15 py-12 px-6 mt-auto">
+    <footer
+      className={cn(
+        "bg-surface-container-lowest border-t border-outline-variant/15 py-12 px-6 mt-auto transition-all",
+        hasFixedSidebar && "md:pl-72"
+      )}
+    >
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-8">
         <div className="max-w-md">
           <div className="flex items-center gap-2 mb-3">
-         <Img src="/logo.png" alt="SCOUTER Logo" className="size-6" />
+            <Img src="/logo.png" alt="SCOUTER Logo" className="size-6" />
             <span className="font-headline font-bold text-sm tracking-wider text-on-surface">
               SCOUTER
             </span>

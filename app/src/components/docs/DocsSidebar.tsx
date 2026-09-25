@@ -45,7 +45,7 @@ export default function DocsSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 flex-shrink-0 border-r border-outline-variant/20 bg-surface-container-low/70 min-h-[calc(100vh-4rem)] p-4 flex flex-col justify-between">
+    <aside className="fixed top-16 left-0 bottom-0 w-64 border-r border-outline-variant/20 bg-surface-container-low/95 backdrop-blur-md p-4 flex flex-col justify-between overflow-y-auto z-30">
       <div className="space-y-6">
         {DOCS_NAV.map((section) => (
           <div key={section.title} className="space-y-1">
