@@ -9,9 +9,10 @@ import Img from "../ui/Img";
 
 const navLinks = [
   { href: "/discover", label: "Discover", icon: "explore" },
+  { href: "/market", label: "Markets", icon: "show_chart" },
   { href: "/compare", label: "Compare", icon: "compare_arrows" },
   { href: "/watchlist", label: "Watchlist", icon: "bookmark" },
-  { href: "/market", label: "Markets", icon: "show_chart" },
+  { href: "/intelligence", label: "Intelligence", icon: "psychology" },
 ];
 
 export default function Navbar() {
