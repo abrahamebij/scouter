@@ -6,8 +6,9 @@ import { ScoutReport, ResearchEvent, ResearchSource } from "./schemas";
 const reportCache = new Map<string, { report: ScoutReport; cachedAt: number }>();
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
 const GEMINI_API_BASE =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent";
+  `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 /**
  * Retrieves a cached ScoutReport if fresh.

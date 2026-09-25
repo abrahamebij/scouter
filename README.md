@@ -37,7 +37,7 @@ Private pre-IPO companies like OpenAI, SpaceX, Anthropic, and Anduril represent 
        │                  Scouter Data Engine                   │
        │  • Normalization & Delta Variance Engine               │
        │  • Multi-Pool On-Chain Candlestick Aggregator (OHLCV)  │
-       │  • Gemini 2.5 Flash Lite + Google Search Grounding     │
+       │  • Gemini 3.5 Flash Lite + Google Search Grounding     │
        └───────────────────────────┬────────────────────────────┘
                                    │
          ┌─────────────────────────┴─────────────────────────┐
@@ -59,7 +59,7 @@ Private pre-IPO companies like OpenAI, SpaceX, Anthropic, and Anduril represent 
 - **Persistent Personal Watchlist**: Reactive watchlist utilizing `useSyncExternalStore` for immediate client hydration without retaining stale pricing.
 
 ### Pillar 2: Grounded AI Market Intelligence
-- **Autonomous Scout Reports**: Powered by Gemini 2.5 Flash Lite with Google Search Grounding to evaluate real-world funding rounds, secondary liquidity shifts, valuation rumors, and operational catalysts.
+- **Autonomous Scout Reports**: Powered by Gemini 3.5 Flash Lite with Google Search Grounding to evaluate real-world funding rounds, secondary liquidity shifts, valuation rumors, and operational catalysts.
 - **Hallucination-Resistant Synthesis**: Injects deterministic PreStocks on-chain metrics into LLM system prompts, ensuring AI answers are mathematically anchored to real pricing.
 
 ### Pillar 3: Solana Identity & API Key Architecture
@@ -138,7 +138,7 @@ run();
 - **UI & Styling**: Tailwind CSS v4 with dark Charcoal Terminal design system
 - **Blockchain Connectivity**: `@solana/connector`, `@solana/web3.js`
 - **Data & Oracles**: PreStocks REST API, GeckoTerminal API, DexScreener, Birdeye
-- **AI & Grounding**: Google Gen AI SDK (`@google/genai` / Gemini 2.5 Flash Lite) with Google Search Grounding
+- **AI & Grounding**: Google Gen AI SDK (`@google/genai` / Gemini 3.5 Flash Lite) with Google Search Grounding
 - **Database & Auth**: Firebase Firestore (server-side authenticated sync)
 - **Charting**: Lightweight Charts 5
 - **Tooling Package**: `scouter-sdk` (TypeScript, ES2022 / NodeNext)
