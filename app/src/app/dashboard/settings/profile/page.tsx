@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { useWallet } from "@solana/connector/react";
 import { useFirebaseAuth } from "@/lib/firebase/useFirebaseAuth";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase/config";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useToast } from "@/components/ui/Toast";
 
@@ -32,9 +30,20 @@ export default function ProfileSettingsPage() {
 
     setSaving(true);
     try {
-      const userRef = doc(db, "users", addressStr.toLowerCase());
-      await updateDoc(userRef, { displayName: displayName.trim() });
-      toast("Profile updated successfully in Firebase", "success");
+      const res = await fetch("/api/user/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          walletAddress: addressStr,
+          displayName: displayName.trim(),
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast("Profile updated successfully in Firebase", "success");
+      } else {
+        toast(data.error || "Failed to update profile", "error");
+      }
     } catch {
       toast("Failed to update profile", "error");
     } finally {

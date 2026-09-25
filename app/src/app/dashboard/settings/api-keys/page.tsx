@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useWallet } from "@solana/connector/react";
-import { createApiKey, listApiKeys, revokeApiKey, ApiKeyItem } from "@/lib/firebase/apiKeys";
+import type { ApiKeyItem } from "@/lib/firebase/apiKeys";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { useToast } from "@/components/ui/Toast";
 
@@ -21,8 +21,11 @@ export default function ApiKeysSettingsPage() {
     if (!addressStr) return;
     setLoading(true);
     try {
-      const res = await listApiKeys(addressStr);
-      setKeys(res);
+      const res = await fetch(`/api/user/keys?walletAddress=${encodeURIComponent(addressStr)}`);
+      const data = await res.json();
+      if (data.keys) {
+        setKeys(data.keys);
+      }
     } catch {
       toast("Unable to load API keys", "error");
     } finally {
@@ -40,14 +43,22 @@ export default function ApiKeysSettingsPage() {
 
     setCreating(true);
     try {
-      const res = await createApiKey(addressStr, keyName.trim() || "Default Secret Key");
-      if (res) {
-        setNewlyCreatedKey(res.rawKey);
+      const res = await fetch("/api/user/keys", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          walletAddress: addressStr,
+          name: keyName.trim() || "Default Secret Key",
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.rawKey) {
+        setNewlyCreatedKey(data.rawKey);
         setKeyName("");
         await loadKeys();
         toast("API key generated successfully", "success");
       } else {
-        toast("Failed to generate API key", "error");
+        toast(data.error || "Failed to generate API key", "error");
       }
     } catch {
       toast("API key generation failed", "error");
@@ -59,12 +70,20 @@ export default function ApiKeysSettingsPage() {
   const handleRevoke = async (keyId: string) => {
     if (!addressStr) return;
     try {
-      const ok = await revokeApiKey(addressStr, keyId);
-      if (ok) {
+      const res = await fetch("/api/user/keys", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          walletAddress: addressStr,
+          keyId,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
         toast("API key revoked", "success");
         await loadKeys();
       } else {
-        toast("Failed to revoke key", "error");
+        toast(data.error || "Failed to revoke key", "error");
       }
     } catch {
       toast("Error revoking API key", "error");
