@@ -92,7 +92,7 @@ export default async function DashboardPage() {
           <div className="text-[10px] font-label uppercase tracking-wider text-on-surface-variant/80 font-medium">
             Widest Discount
           </div>
-          <div className="font-mono text-2xl font-bold text-secondary">
+          <div className="font-mono text-2xl font-bold text-error">
             {lowestPremium ? formatPercentage(lowestPremium.premiumPercent) : "—"}
           </div>
           <div className="text-[11px] text-on-surface-variant/60 font-light truncate">
@@ -165,7 +165,7 @@ export default async function DashboardPage() {
                     <td className="py-3 px-4">
                       <span
                         className={`font-semibold ${
-                          isPremiumPositive ? "text-accent" : "text-secondary"
+                          isPremiumPositive ? "text-accent" : "text-error"
                         }`}
                       >
                         {formatPercentage(p.premiumPercent)}

@@ -83,7 +83,7 @@ export default function ContextualCompanyCard({ product }: ContextualCompanyCard
           </span>
           <span
             className={`font-mono font-semibold ${
-              product.premiumPercent >= 0 ? "text-accent" : "text-secondary"
+              product.premiumPercent >= 0 ? "text-accent" : "text-error"
             }`}
           >
             {formatPercentage(product.premiumPercent)}

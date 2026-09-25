@@ -18,7 +18,7 @@ export default function PremiumBadge({
   if (isPositive) {
     colorClasses = "bg-accent/8 text-accent border-accent/20";
   } else if (isNegative) {
-    colorClasses = "bg-secondary/10 text-secondary border-secondary/25";
+    colorClasses = "bg-error/10 text-error border-error/25";
   }
 
   const sizeClasses = {

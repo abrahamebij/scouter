@@ -60,7 +60,7 @@ export default function MarketMetrics({ product }: MarketMetricsProps) {
           </div>
           <div
             className={`font-mono text-base sm:text-lg font-bold ${
-              isPremiumPositive ? "text-accent" : "text-secondary"
+              isPremiumPositive ? "text-accent" : "text-error"
             }`}
           >
             {formatPercentage(product.premiumPercent)}

@@ -139,7 +139,7 @@ export default function MarketTerminalHeader({ product }: MarketTerminalHeaderPr
             <span className="text-on-surface-variant/40">&bull;</span>
             <span
               className={`text-[11px] font-semibold ${
-                isPremiumPositive ? "text-accent" : "text-secondary"
+                isPremiumPositive ? "text-accent" : "text-error"
               }`}
             >
               {formatPercentage(product.premiumPercent)} vs Mark

@@ -104,7 +104,7 @@ input:checked + .custom-radio::after {
   --color-accent-dim: #34d399;
   --color-on-accent: #0d2e1f;
 
-  /* Secondary — muted blue, used for discount badges */
+  /* Secondary — muted slate blue */
   --color-secondary: #93c5fd;
   --color-secondary-container: #3b82f6;
   --color-secondary-fixed: #bfdbfe;

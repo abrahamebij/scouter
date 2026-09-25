@@ -148,7 +148,7 @@ export default function WhatChanged({ product }: WhatChangedProps) {
             </div>
             <div
               className={`text-xs font-mono font-semibold mt-1.5 ${
-                change.premiumPointsChange >= 0 ? "text-accent" : "text-secondary"
+                change.premiumPointsChange >= 0 ? "text-accent" : "text-error"
               }`}
             >
               {change.premiumPointsChange >= 0 ? "+" : ""}
