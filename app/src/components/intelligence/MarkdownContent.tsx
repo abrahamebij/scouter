@@ -1,7 +1,91 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import MaterialIcon from "@/components/ui/MaterialIcon";
+
+interface RenderImageProps {
+  src: string;
+  alt?: string;
+  caption?: string;
+}
+
+/**
+ * Responsive, graceful image renderer with loading placeholder, error fallback,
+ * and high-resolution zoom link.
+ */
+function RenderImage({ src, alt = "Attached image", caption }: RenderImageProps) {
+  const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  if (hasError) {
+    return (
+      <a
+        href={src}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="my-2.5 p-3 rounded-xl border border-outline-variant/20 bg-surface-container-lowest/80 hover:bg-surface-container-high/40 transition-colors flex items-center gap-3 text-xs text-on-surface-variant hover:text-on-surface group max-w-xl"
+      >
+        <div className="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface-variant shrink-0">
+          <MaterialIcon icon="image" size="sm" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="font-medium truncate text-on-surface group-hover:text-accent transition-colors">
+            {alt || "External Image"}
+          </div>
+          <div className="text-[10px] font-mono text-on-surface-variant/50 truncate">
+            {src}
+          </div>
+        </div>
+        <MaterialIcon icon="open_in_new" size="sm" />
+      </a>
+    );
+  }
+
+  return (
+    <figure className="my-3.5 block max-w-xl">
+      <div className="relative group rounded-xl overflow-hidden border border-outline-variant/20 bg-surface-container-lowest flex items-center justify-center shadow-sm">
+        {isLoading && (
+          <div className="w-full h-44 flex items-center justify-center bg-surface-container-low animate-pulse">
+            <span className="text-[11px] font-mono text-on-surface-variant/50 flex items-center gap-2">
+              <MaterialIcon icon="image" size="sm" />
+              <span>Loading image...</span>
+            </span>
+          </div>
+        )}
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy"
+          onLoad={() => setIsLoading(false)}
+          onError={() => {
+            setIsLoading(false);
+            setHasError(true);
+          }}
+          className={`max-h-80 w-auto max-w-full object-contain mx-auto transition-opacity duration-300 ${
+            isLoading ? "hidden" : "block"
+          }`}
+        />
+        {!isLoading && (
+          <a
+            href={src}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute top-2 right-2 p-1.5 rounded-lg bg-surface/80 hover:bg-surface border border-outline-variant/30 text-on-surface opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm shadow"
+            title="Open image in new tab"
+          >
+            <MaterialIcon icon="open_in_new" size="sm" />
+          </a>
+        )}
+      </div>
+      {(caption || alt) && (
+        <figcaption className="text-[11px] text-on-surface-variant/70 text-center font-light mt-1.5 px-2">
+          {caption || alt}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
 
 interface MarkdownContentProps {
   content: string;
@@ -9,7 +93,7 @@ interface MarkdownContentProps {
 
 /**
  * Lightweight, zero-dependency Markdown renderer tailored for Scouter terminal output.
- * Formats headings, bullet lists, markdown tables, bold text, code tags, and links.
+ * Formats headings, bullet lists, markdown tables, bold text, code tags, links, and inline images.
  */
 export default function MarkdownContent({ content }: MarkdownContentProps) {
   const lines = content.split("\n");
@@ -109,6 +193,29 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
       continue;
     }
 
+    // Standalone image line: ![alt](url) or ![alt](url "title")
+    const imageBlockMatch = line.match(/^!\[(.*?)\]\((https?:\/\/[^\s)]+)(?:\s+"(.*?)")?\)$/);
+    if (imageBlockMatch) {
+      if (inList) flushList(i);
+      if (inTable) flushTable(i);
+      const [, alt, url, title] = imageBlockMatch;
+      renderedElements.push(
+        <RenderImage key={`img-${i}`} src={url} alt={alt} caption={title || alt} />
+      );
+      continue;
+    }
+
+    // Standalone bare image URL line: https://.../image.png
+    const bareImageBlockMatch = line.match(/^(https?:\/\/[^\s<>]+\.(?:png|jpe?g|gif|webp|svg)(?:\?[^\s<>]*)?)$/i);
+    if (bareImageBlockMatch) {
+      if (inList) flushList(i);
+      if (inTable) flushTable(i);
+      renderedElements.push(
+        <RenderImage key={`bare-img-${i}`} src={bareImageBlockMatch[1]} alt="Attached image" />
+      );
+      continue;
+    }
+
     // Headings
     if (line.startsWith("### ")) {
       renderedElements.push(
@@ -156,11 +263,53 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
  * Handles inline formatting: bold (**text**), links ([text](url)), code (`code`), and $SYMBOL tags.
  */
 function formatInline(text: string): React.ReactNode {
-  // Regex to match markdown links, bold chunks, code tags, or $SYMBOL tags
-  const tokens = text.split(/(\*\*.*?\*\*|\[.*?\]\(.*?\)|\`.*?\`|\$[A-Z0-9\-]+)/g);
+  // Regex to match:
+  // 1. Linked image: [![alt](img_url)](target_url)
+  // 2. Markdown image: ![alt](url)
+  // 3. Bold: **text**
+  // 4. Link: [label](url)
+  // 5. Code: `code`
+  // 6. Company symbol: $SYMBOL
+  // 7. Bare image URL: https://.../image.png
+  const tokens = text.split(
+    /(\[!\[.*?\]\(https?:\/\/[^\s)]+\)\]\(https?:\/\/[^\s)]+\)|!\[.*?\]\(https?:\/\/[^\s)]+\)|\*\*.*?\*\*|\[.*?\]\(.*?\)|\`.*?\`|\$[A-Z0-9\-]+|(?:https?:\/\/[^\s<>]+\.(?:png|jpe?g|gif|webp|svg)(?:\?[^\s<>]*)?))/gi
+  );
 
   return tokens.map((part, idx) => {
     if (!part) return null;
+
+    // Linked image: [![alt](img_url)](target_url)
+    const linkedImgMatch = part.match(
+      /^\[!\[(.*?)\]\((https?:\/\/[^\s)]+)\)\]\((https?:\/\/[^\s)]+)\)$/
+    );
+    if (linkedImgMatch) {
+      const [, alt, imgUrl, targetUrl] = linkedImgMatch;
+      return (
+        <a
+          key={idx}
+          href={targetUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block my-2"
+        >
+          <RenderImage src={imgUrl} alt={alt} caption={alt} />
+        </a>
+      );
+    }
+
+    // Inline image: ![alt](url) or ![alt](url "title")
+    const imgMatch = part.match(/^!\[(.*?)\]\((https?:\/\/[^\s)]+)(?:\s+"(.*?)")?\)$/);
+    if (imgMatch) {
+      const [, alt, url, title] = imgMatch;
+      return <RenderImage key={idx} src={url} alt={alt} caption={title || alt} />;
+    }
+
+    // Bare image URL: https://.../image.png
+    if (
+      /^https?:\/\/[^\s<>]+\.(?:png|jpe?g|gif|webp|svg)(?:\?[^\s<>]*)?$/i.test(part)
+    ) {
+      return <RenderImage key={idx} src={part} alt="Shared Image" />;
+    }
 
     // Bold: **text**
     if (part.startsWith("**") && part.endsWith("**") && part.length >= 4) {
